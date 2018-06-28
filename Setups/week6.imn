@@ -1,0 +1,533 @@
+node n1 {
+    type router
+    model PC
+    network-config {
+	hostname host1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:01
+	!
+    }
+    canvas c1
+    iconcoords {68.0 561.0}
+    labelcoords {68.0 593.0}
+    interface-peer {eth0 n5}
+}
+
+node n2 {
+    type router
+    model PC
+    network-config {
+	hostname host2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:02
+	!
+    }
+    canvas c1
+    iconcoords {232.0 564.0}
+    labelcoords {232.0 596.0}
+    interface-peer {eth0 n5}
+}
+
+node n3 {
+    type router
+    model PC
+    network-config {
+	hostname host3
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:03
+	!
+    }
+    canvas c1
+    iconcoords {72.0 393.0}
+    labelcoords {72.0 425.0}
+    interface-peer {eth0 n5}
+}
+
+node n4 {
+    type router
+    model PC
+    network-config {
+	hostname host4
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:04
+	!
+    }
+    canvas c1
+    iconcoords {142.0 169.0}
+    labelcoords {142.0 201.0}
+    interface-peer {eth0 n6}
+    services {}
+}
+
+node n5 {
+    type lanswitch
+    network-config {
+	hostname switch1
+	!
+    }
+    canvas c1
+    iconcoords {152.0 465.0}
+    labelcoords {152.0 489.0}
+    interface-peer {e0 n1}
+    interface-peer {e1 n2}
+    interface-peer {e2 n3}
+    interface-peer {e3 n6}
+}
+
+node n6 {
+    type router
+    model router
+    network-config {
+	hostname router1
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F3
+	 ipv6 address 2001:DB8:BEE:C1::FE/127
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F2
+	 ipv6 address 2001:DB8:BEE:22::1/64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F1
+	 ipv6 address 2001:DB8:BEE:11::1/64
+	!
+    }
+    canvas c1
+    iconcoords {348.0 330.0}
+    labelcoords {348.0 362.0}
+    interface-peer {eth0 n5}
+    interface-peer {eth1 n4}
+    interface-peer {eth2 n11}
+    services {IPForward DefaultRoute radvd}
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default proto static via 2001:DB8:BEE:C1::FF
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:11::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	interface eth1 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:22::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	}
+    }
+}
+
+node n7 {
+    type hub
+    network-config {
+	hostname switch2
+	!
+    }
+    canvas c1
+    iconcoords {539.0 234.0}
+    labelcoords {539.0 258.0}
+    interface-peer {e0 n8}
+    interface-peer {e1 n9}
+    interface-peer {e2 n10}
+    interface-peer {e3 n11}
+}
+
+node n8 {
+    type router
+    model host
+    network-config {
+	hostname webserver
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:05
+	!
+    }
+    canvas c1
+    iconcoords {416.0 121.0}
+    labelcoords {416.0 153.0}
+    interface-peer {eth0 n7}
+}
+
+node n9 {
+    type router
+    model host
+    network-config {
+	hostname dns64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:06
+	!
+    }
+    canvas c1
+    iconcoords {540.0 113.0}
+    labelcoords {540.0 145.0}
+    interface-peer {eth0 n7}
+}
+
+node n10 {
+    type router
+    model host
+    network-config {
+	hostname nat64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:07
+	!
+    }
+    canvas c1
+    iconcoords {408.0 234.0}
+    labelcoords {408.0 266.0}
+    interface-peer {eth0 n7}
+}
+
+node n11 {
+    type router
+    model router
+    network-config {
+	hostname router2
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F6
+	 ipv6 address 2001:DB8:AA::20/64
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F5
+	 ipv6 address 2001:DB8:BEE:C1::FF/127
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F4
+	 ipv6 address 2001:DB8:BEE:33::1/64
+	!
+    }
+    canvas c1
+    iconcoords {597.0 389.0}
+    labelcoords {597.0 421.0}
+    interface-peer {eth0 n7}
+    interface-peer {eth1 n6}
+    interface-peer {eth2 n12}
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default via 2001:DB8:AA::1
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute
+	custom-command StaticRoute
+	config {
+	files=('staticroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute:staticroute.sh
+	custom-command staticroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add 2001:DB8:BEE:11::/64 proto static via 2001:DB8:BEE:C1::FE
+	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:33::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	}
+    }
+    services {IPForward DefaultRoute StaticRoute radvd}
+}
+
+node n12 {
+    type router
+    model router
+    network-config {
+	hostname isp
+	!
+	interface eth2
+	 ipv6 address 2001:DB8:BB::1/64
+	 mac address 02:00:00:00:00:F8
+	!
+	interface eth0
+	 ipv6 address 2001:DB8:AA::1/64
+	 mac address 02:00:00:00:00:F7
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:41
+	!
+    }
+    canvas c1
+    iconcoords {746.0 425.0}
+    labelcoords {746.0 457.0}
+    interface-peer {eth0 n11}
+    interface-peer {eth1 n13}
+    interface-peer {eth2 n14}
+    custom-config {
+	custom-config-id service:StaticRoute
+	custom-command StaticRoute
+	config {
+	files=('staticroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute:staticroute.sh
+	custom-command staticroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add 2001:DB8:BEE::/48 proto static via 2001:DB8:AA::20
+	
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth2 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BB::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	}
+    }
+    services {IPForward StaticRoute radvd}
+}
+
+node n13 {
+    type router
+    model host
+    network-config {
+	hostname ebee
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:42
+	!
+    }
+    canvas c1
+    iconcoords {692.0 510.0}
+    labelcoords {692.0 542.0}
+    interface-peer {eth0 n12}
+}
+
+node n14 {
+    type router
+    model PC
+    network-config {
+	hostname hackerman
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:08
+	!
+    }
+    canvas c1
+    iconcoords {800.0 511.0}
+    labelcoords {800.0 543.0}
+    interface-peer {eth0 n12}
+}
+
+link l1 {
+    nodes {n1 n5}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n2 n5}
+    bandwidth 0
+}
+
+link l3 {
+    nodes {n3 n5}
+    bandwidth 0
+}
+
+link l4 {
+    nodes {n5 n6}
+    bandwidth 0
+}
+
+link l5 {
+    nodes {n4 n6}
+    bandwidth 0
+}
+
+link l6 {
+    nodes {n6 n11}
+    bandwidth 0
+}
+
+link l7 {
+    nodes {n8 n7}
+    bandwidth 0
+}
+
+link l8 {
+    nodes {n9 n7}
+    bandwidth 0
+}
+
+link l9 {
+    nodes {n10 n7}
+    bandwidth 0
+}
+
+link l10 {
+    nodes {n11 n7}
+    bandwidth 0
+}
+
+link l11 {
+    nodes {n11 n12}
+    bandwidth 0
+}
+
+link l12 {
+    nodes {n12 n13}
+    bandwidth 0
+}
+
+link l13 {
+    nodes {n12 n14}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {8.0 44.0 293.0 288.0}
+    type rectangle
+    label {Local Network 2}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a2 {
+    iconcoords {10 318 292 620}
+    type rectangle
+    label {Local Network 1}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a3 {
+    iconcoords {349 39 591 299}
+    type rectangle
+    label {Server Zone}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #f8cecc
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {0.0 0.0 603.0 634.0}
+    type rectangle
+    label {Internal Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #7ea6e0
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names no
+    ip_addresses no
+    ipv6_addresses no
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid no
+    traffic_start 0
+}
+
+option session {
+}
+
+
