@@ -1,6 +1,7 @@
 {
     "week": "2",
-    "available": "False",
-    "description": "Not available yet"
+    "available": "True",
+    "description": "IPv6 and IPv4",
+    "background": "#70BF41"
 }
 
