@@ -1,6 +1,7 @@
 {
     "week": "3",
     "available": "True",
-    "description": "This week is about routing"
+    "description": "This week is about routing",
+    "background":. "#F5D328"
 }
 
