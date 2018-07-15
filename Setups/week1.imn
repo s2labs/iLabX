@@ -1,85 +1,3 @@
-node n1 {
-    type router
-    model PC
-    network-config {
-	hostname host1
-	!
-	interface eth0
-	 mac address 02:00:00:00:00:01
-	!
-    }
-    canvas c1
-    iconcoords {67.0 562.0}
-    labelcoords {67.0 594.0}
-    interface-peer {eth0 n5}
-    services {}
-}
-
-node n2 {
-    type router
-    model PC
-    network-config {
-	hostname host2
-	!
-	interface eth0
-	 mac address 02:00:00:00:00:02
-	!
-    }
-    canvas c1
-    iconcoords {232.0 564.0}
-    labelcoords {232.0 596.0}
-    interface-peer {eth0 n5}
-    services {}
-}
-
-node n3 {
-    type router
-    model PC
-    network-config {
-	hostname host3
-	!
-	interface eth0
-	 mac address 02:00:00:00:00:03
-	!
-    }
-    canvas c1
-    iconcoords {72.0 393.0}
-    labelcoords {72.0 425.0}
-    interface-peer {eth0 n5}
-    services {}
-}
-
-node n4 {
-    type router
-    model PC
-    network-config {
-	hostname host4
-	!
-	interface eth0
-	 mac address 02:00:00:00:00:04
-	!
-    }
-    canvas c1
-    iconcoords {52.0 109.0}
-    labelcoords {52.0 141.0}
-    services {}
-    interface-peer {eth0 n10}
-}
-
-node n5 {
-    type lanswitch
-    network-config {
-	hostname switch1
-	!
-    }
-    canvas c1
-    iconcoords {152.0 465.0}
-    labelcoords {152.0 489.0}
-    interface-peer {e0 n1}
-    interface-peer {e1 n2}
-    interface-peer {e2 n3}
-}
-
 node n8 {
     type router
     model PC
@@ -87,12 +5,12 @@ node n8 {
 	hostname hiveB
 	!
 	interface eth0
-	 mac address 02:00:00:00:00:0B
+	 mac address 00:00:00:00:00:BB
 	!
     }
     canvas c1
-    iconcoords {537.0 126.0}
-    labelcoords {537.0 158.0}
+    iconcoords {285.0 138.0}
+    labelcoords {285.0 170.0}
     custom-image /usr/share/core/icons/normal/pc.gif
     interface-peer {eth0 n6}
     services {}
@@ -105,94 +23,15 @@ node n6 {
 	hostname hiveA
 	!
 	interface eth0
-	 mac address 02:00:00:00:00:0A
+	 mac address 00:00:00:00:00:AA
 	!
     }
     canvas c1
-    iconcoords {402.0 126.0}
-    labelcoords {402.0 158.0}
+    iconcoords {70.0 137.0}
+    labelcoords {70.0 169.0}
     custom-image /usr/share/core/icons/normal/pc.gif
     interface-peer {eth0 n8}
     services {}
-}
-
-node n7 {
-    type router
-    model PC
-    network-config {
-	hostname host5
-	!
-	interface eth0
-	 mac address 02:00:00:00:00:05
-	!
-    }
-    canvas c1
-    iconcoords {219.0 115.0}
-    labelcoords {219.0 147.0}
-    services {}
-    interface-peer {eth0 n10}
-}
-
-node n9 {
-    type router
-    model PC
-    network-config {
-	hostname host6
-	!
-	interface eth0
-	 mac address 02:00:00:00:00:06
-	!
-    }
-    canvas c1
-    iconcoords {140.0 249.0}
-    labelcoords {140.0 281.0}
-    services {}
-    interface-peer {eth0 n10}
-}
-
-node n10 {
-    type hub
-    network-config {
-	hostname hub1
-	!
-    }
-    canvas c1
-    iconcoords {139.0 164.0}
-    labelcoords {139.0 188.0}
-    custom-image /usr/share/core/icons/normal/hub.gif
-    interface-peer {e0 n4}
-    interface-peer {e1 n7}
-    interface-peer {e2 n9}
-}
-
-link l1 {
-    nodes {n1 n5}
-    bandwidth 0
-}
-
-link l2 {
-    nodes {n2 n5}
-    bandwidth 0
-}
-
-link l3 {
-    nodes {n3 n5}
-    bandwidth 0
-}
-
-link l4 {
-    nodes {n4 n10}
-    bandwidth 0
-}
-
-link l5 {
-    nodes {n7 n10}
-    bandwidth 0
-}
-
-link l6 {
-    nodes {n9 n10}
-    bandwidth 0
 }
 
 link l7 {
@@ -200,41 +39,13 @@ link l7 {
     bandwidth 0
 }
 
-annotation a1 {
-    iconcoords {8.0 44.0 293.0 288.0}
-    type rectangle
-    label {Local Network 2}
-    labelcolor black
-    fontfamily {Arial}
-    fontsize {12}
-    color #cdeb8b
-    width 1
-    border black
-    rad 0
-    canvas c1
-}
-
-annotation a2 {
-    iconcoords {10 318 292 620}
-    type rectangle
-    label {Local Network 1}
-    labelcolor black
-    fontfamily {Arial}
-    fontsize {12}
-    color #cdeb8b
-    width 1
-    border black
-    rad 0
-    canvas c1
-}
-
 annotation a3 {
-    iconcoords {349 39 591 299}
+    iconcoords {10 37 377 384}
     type rectangle
     label {Hive Network}
     labelcolor black
     fontfamily {Arial}
-    fontsize 12
+    fontsize {12}
     color #cdeb8b
     width 1
     border black
