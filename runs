@@ -4,13 +4,16 @@
             "name": "SS18",
             "branch": "201801",
             "start": "2018-04-15T00:00:00.000Z",
-            "end": "2018-10-14T23:59:59.999Z"
+            "end": "2018-10-14T23:59:59.999Z",
+            "forumUrl": "https://edge.edx.org/courses/course-v1:TUMx+ILABx+2017_T3/discussion/forum/",
+            "faqUrl": "https://edge.edx.org/courses/course-v1:TUMx+ILABx+2017_T3/8540f51ffac74523a0f1741f5f44f640/"
         },
         {
             "name": "WS18/19",
             "branch": "201801",
             "start": "2018-10-15T00:00:00.000Z",
-            "end": "2019-04-14T23:59:59.999Z"
-        }
+            "end": "2019-04-14T23:59:59.999Z",
+            "forumUrl": "https://edge.edx.org/courses/course-v1:TUMx+ILABx+2017_T3/discussion/forum/",
+            "faqUrl": "https://edge.edx.org/courses/course-v1:TUMx+ILABx+2017_T3/8540f51ffac74523a0f1741f5f44f640/"
     ]
 }
