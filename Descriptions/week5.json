@@ -1,6 +1,6 @@
 {
     "week": "5",
-    "available": "True",
+    "available": "False",
     "description": "This week is about DNS, Webservers and HTTP.",
     "background": "#EC5C57"
 }
