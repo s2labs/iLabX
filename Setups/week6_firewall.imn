@@ -9,8 +9,8 @@ node n1 {
 	!
     }
     canvas c1
-    iconcoords {68.0 561.0}
-    labelcoords {68.0 593.0}
+    iconcoords {70 560}
+    labelcoords {70 600}
     interface-peer {eth0 n5}
 }
 
@@ -25,8 +25,8 @@ node n2 {
 	!
     }
     canvas c1
-    iconcoords {232.0 564.0}
-    labelcoords {232.0 596.0}
+    iconcoords {230 560}
+    labelcoords {230 600}
     interface-peer {eth0 n5}
 }
 
@@ -41,8 +41,8 @@ node n3 {
 	!
     }
     canvas c1
-    iconcoords {72.0 393.0}
-    labelcoords {72.0 425.0}
+    iconcoords {70 390}
+    labelcoords {70 430}
     interface-peer {eth0 n5}
 }
 
@@ -57,10 +57,17 @@ node n4 {
 	!
     }
     canvas c1
-    iconcoords {142.0 169.0}
-    labelcoords {142.0 201.0}
+    iconcoords {140 170}
+    labelcoords {140 140}
     interface-peer {eth0 n6}
-    services {}
+    services {UserDefined SSH } 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
 }
 
 node n5 {
@@ -70,8 +77,8 @@ node n5 {
 	!
     }
     canvas c1
-    iconcoords {152.0 465.0}
-    labelcoords {152.0 489.0}
+    iconcoords {150 460}
+    labelcoords {150 505}
     interface-peer {e0 n1}
     interface-peer {e1 n2}
     interface-peer {e2 n3}
@@ -98,12 +105,19 @@ node n6 {
 	!
     }
     canvas c1
-    iconcoords {348.0 330.0}
-    labelcoords {348.0 362.0}
+    iconcoords {290 300}
+    labelcoords {315 280}
     interface-peer {eth0 n5}
     interface-peer {eth1 n4}
     interface-peer {eth2 n11}
-    services {IPForward DefaultRoute radvd}
+    services {UserDefined SSH IPForward DefaultRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
     custom-config {
 	custom-config-id service:DefaultRoute
 	custom-command DefaultRoute
@@ -156,8 +170,8 @@ node n7 {
 	!
     }
     canvas c1
-    iconcoords {539.0 234.0}
-    labelcoords {539.0 258.0}
+    iconcoords {500 210}
+    labelcoords {550 215}
     interface-peer {e0 n8}
     interface-peer {e1 n9}
     interface-peer {e2 n10}
@@ -175,8 +189,8 @@ node n8 {
 	!
     }
     canvas c1
-    iconcoords {416.0 121.0}
-    labelcoords {416.0 153.0}
+    iconcoords {420 110}
+    labelcoords {420 85}
     interface-peer {eth0 n7}
 }
 
@@ -191,8 +205,8 @@ node n9 {
 	!
     }
     canvas c1
-    iconcoords {540.0 113.0}
-    labelcoords {540.0 145.0}
+    iconcoords {580 110}
+    labelcoords {580 85}
     interface-peer {eth0 n7}
 }
 
@@ -207,8 +221,8 @@ node n10 {
 	!
     }
     canvas c1
-    iconcoords {408.0 234.0}
-    labelcoords {408.0 266.0}
+    iconcoords {410 230}
+    labelcoords {410 270}
     interface-peer {eth0 n7}
 }
 
@@ -232,11 +246,33 @@ node n11 {
 	!
     }
     canvas c1
-    iconcoords {597.0 389.0}
-    labelcoords {597.0 421.0}
+    iconcoords {500 300}
+    labelcoords {525 280}
     interface-peer {eth0 n7}
     interface-peer {eth1 n6}
     interface-peer {eth2 n12}
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:33::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	    MaxRtrAdvInterval 10;
+	};
+	
+	}
+    }
     custom-config {
 	custom-config-id service:DefaultRoute
 	custom-command DefaultRoute
@@ -269,28 +305,14 @@ node n11 {
 	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
 	}
     }
+    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd} 
     custom-config {
-	custom-config-id service:radvd
-	custom-command radvd
+	custom-config-id service:UserDefined
+	custom-command UserDefined
 	config {
-	files=('/etc/radvd/radvd.conf', )
+	cmdup=('mount -a', )
 	}
     }
-    custom-config {
-	custom-config-id service:radvd:/etc/radvd/radvd.conf
-	custom-command /etc/radvd/radvd.conf
-	config {
-	interface eth0 {
-	    AdvSendAdvert on;
-	    prefix 2001:DB8:BEE:33::/64 {
-	        AdvOnLink on;
-	        AdvAutonomous on;
-	    };
-	};
-	
-	}
-    }
-    services {IPForward DefaultRoute StaticRoute radvd}
 }
 
 node n12 {
@@ -312,8 +334,8 @@ node n12 {
 	!
     }
     canvas c1
-    iconcoords {746.0 425.0}
-    labelcoords {746.0 457.0}
+    iconcoords {740 420}
+    labelcoords {780 425}
     interface-peer {eth0 n11}
     interface-peer {eth1 n13}
     interface-peer {eth2 n14}
@@ -354,7 +376,14 @@ node n12 {
 	};
 	}
     }
-    services {IPForward StaticRoute radvd}
+    services {UserDefined SSH IPForward StaticRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
 }
 
 node n13 {
@@ -368,8 +397,8 @@ node n13 {
 	!
     }
     canvas c1
-    iconcoords {692.0 510.0}
-    labelcoords {692.0 542.0}
+    iconcoords {670 510}
+    labelcoords {670 550}
     interface-peer {eth0 n12}
 }
 
@@ -384,9 +413,79 @@ node n14 {
 	!
     }
     canvas c1
-    iconcoords {800.0 511.0}
-    labelcoords {800.0 543.0}
+    iconcoords {810 510}
+    labelcoords {810 550}
     interface-peer {eth0 n12}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('hack.sh', )
+	cmdup=('mount -a', 'sh hack.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:hack.sh
+	custom-command hack.sh
+	config {
+	#!/bin/sh
+	
+	touch /etc/hackerman.py
+	
+	cat <<EOF > /etc/hackerman.py
+	#!/usr/bin/env python3
+	
+	import os, sys
+	import subprocess
+	import re,socket
+	import time
+	
+	def ping_pc(address):
+	    p = subprocess.Popen(['ping6',address,'-c','1',"-W","2"],stdout=subprocess.PIPE)
+	    p.wait()
+	    if p.poll()==0:
+	        #print("Attacker could use ICMP messages")
+	        return True
+	    else:
+	        return False
+	
+	def ssh2(address):
+	    s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+	    s.settimeout(2)
+	    try:
+	        s.connect((address, 22))
+	        s.shutdown(2)
+	        #print("Attacker could use SSH")
+	        return True
+	    except:
+	        return False
+	
+	def main(args):
+	    while(True):
+	        ping=ping_pc("2001:db8:bee:33:0:ff:fe00:6")
+	        ssh=ssh2("2001:db8:bee:33:0:ff:fe00:6")
+	        if not ping and not ssh:
+	            #print("Attacker is using a different IP now")
+	            p=subprocess.run(["ip","addr", "del", "2001:db8:bb::ff:fe00:8/64", "dev", "eth0"])
+	            p=subprocess.run(["ip","addr", "add", "2001:db8:bb::ff:fe00:9/64", "dev", "eth0"])
+	            # wait for DAD to complete for global scope
+	            time.sleep(5)
+	            ping_pc("2001:db8:bee:33:0:ff:fe00:6")
+	            ssh2("2001:db8:bee:33:0:ff:fe00:6")
+	            p=subprocess.run(["ifconfig", "eth0", "inet6", "del", "2001:db8:bb::ff:fe00:9/64"])
+	            p=subprocess.run(["ifconfig", "eth0", "inet6", "add", "2001:db8:bb::ff:fe00:8/64"])
+	        #else:
+	        #    print("Please prevent the Attacker from using those protocols")
+	        time.sleep(10)
+	
+	if __name__ == "__main__":
+	    main(sys.argv)
+	EOF
+	
+	python3 /etc/hackerman.py
+	}
+    }
+    services {DefaultRoute SSH UserDefined}
 }
 
 link l1 {
@@ -455,7 +554,7 @@ link l13 {
 }
 
 annotation a1 {
-    iconcoords {8.0 44.0 293.0 288.0}
+    iconcoords {10 40 290 290}
     type rectangle
     label {Local Network 2}
     labelcolor black
@@ -469,7 +568,7 @@ annotation a1 {
 }
 
 annotation a2 {
-    iconcoords {10 318 292 620}
+    iconcoords {10 310 290 620}
     type rectangle
     label {Local Network 1}
     labelcolor black
@@ -483,7 +582,7 @@ annotation a2 {
 }
 
 annotation a3 {
-    iconcoords {349 39 591 299}
+    iconcoords {350 40 620 290}
     type rectangle
     label {Server Zone}
     labelcolor black
@@ -497,7 +596,7 @@ annotation a3 {
 }
 
 annotation a4 {
-    iconcoords {0.0 0.0 603.0 634.0}
+    iconcoords {0 0 630 630}
     type rectangle
     label {Internal Network}
     labelcolor black
@@ -529,5 +628,4 @@ option global {
 
 option session {
 }
-
 

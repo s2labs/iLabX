@@ -9,8 +9,8 @@ node n1 {
 	!
     }
     canvas c1
-    iconcoords {67.0 562.0}
-    labelcoords {67.0 594.0}
+    iconcoords {70 560}
+    labelcoords {70 600}
     interface-peer {eth0 n5}
     services {SSH UserDefined}
     custom-config {
@@ -18,7 +18,7 @@ node n1 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('sh configure_resolver.sh', )
+	cmdup=('mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -43,8 +43,8 @@ node n2 {
 	!
     }
     canvas c1
-    iconcoords {232.0 564.0}
-    labelcoords {232.0 596.0}
+    iconcoords {230 560}
+    labelcoords {230 600}
     interface-peer {eth0 n5}
     services {SSH UserDefined}
     custom-config {
@@ -52,7 +52,7 @@ node n2 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('sh configure_resolver.sh', )
+	cmdup=('mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -77,8 +77,8 @@ node n3 {
 	!
     }
     canvas c1
-    iconcoords {72.0 393.0}
-    labelcoords {72.0 425.0}
+    iconcoords {70 390}
+    labelcoords {70 430}
     interface-peer {eth0 n5}
     services {SSH UserDefined}
     custom-config {
@@ -86,7 +86,7 @@ node n3 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('sh configure_resolver.sh', )
+	cmdup=('mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -111,8 +111,8 @@ node n4 {
 	!
     }
     canvas c1
-    iconcoords {142.0 169.0}
-    labelcoords {142.0 201.0}
+    iconcoords {140 170}
+    labelcoords {140 140}
     interface-peer {eth0 n6}
     services {SSH UserDefined}
     custom-config {
@@ -120,7 +120,7 @@ node n4 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('sh configure_resolver.sh', )
+	cmdup=('mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -141,8 +141,8 @@ node n5 {
 	!
     }
     canvas c1
-    iconcoords {152.0 465.0}
-    labelcoords {152.0 489.0}
+    iconcoords {150 460}
+    labelcoords {150 505}
     interface-peer {e0 n1}
     interface-peer {e1 n2}
     interface-peer {e2 n3}
@@ -169,18 +169,18 @@ node n6 {
 	!
     }
     canvas c1
-    iconcoords {348.0 331.0}
-    labelcoords {348.0 363.0}
+    iconcoords {290 300}
+    labelcoords {315 280}
     interface-peer {eth0 n5}
     interface-peer {eth1 n4}
     interface-peer {eth2 n11}
-    services {IPForward DefaultRoute radvd UserDefined}
+    services {SSH IPForward DefaultRoute radvd UserDefined}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
 	files=('setup_resolver.sh', )
-	cmdup=('sh setup_resolver.sh', )
+	cmdup=('mount -a', 'sh setup_resolver.sh', )
 	}
     }
     custom-config {
@@ -263,8 +263,8 @@ node n7 {
 	!
     }
     canvas c1
-    iconcoords {539.0 234.0}
-    labelcoords {539.0 258.0}
+    iconcoords {500 210}
+    labelcoords {550 215}
     interface-peer {e0 n8}
     interface-peer {e1 n9}
     interface-peer {e3 n11}
@@ -281,8 +281,8 @@ node n8 {
 	!
     }
     canvas c1
-    iconcoords {411.0 125.0}
-    labelcoords {411.0 157.0}
+    iconcoords {420 110}
+    labelcoords {420 85}
     interface-peer {eth0 n7}
     custom-config {
 	custom-config-id service:HTTP
@@ -644,7 +644,14 @@ node n8 {
 	Include sites-enabled/*.conf
 	}
     }
-    services {DefaultRoute SSH HTTP}
+    services {UserDefined DefaultRoute SSH HTTP} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
 }
 
 node n9 {
@@ -658,15 +665,15 @@ node n9 {
 	!
     }
     canvas c1
-    iconcoords {541.0 114.0}
-    labelcoords {541.0 146.0}
+    iconcoords {580 110}
+    labelcoords {580 85}
     interface-peer {eth0 n7}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
 	files=('setup_dns.sh', )
-	cmdup=('sh setup_dns.sh', )
+	cmdup=('mount -a', 'sh setup_dns.sh', )
 	}
     }
     custom-config {
@@ -742,8 +749,8 @@ node n11 {
 	!
     }
     canvas c1
-    iconcoords {597.0 389.0}
-    labelcoords {597.0 421.0}
+    iconcoords {500 300}
+    labelcoords {525 280}
     interface-peer {eth0 n7}
     interface-peer {eth1 n6}
     interface-peer {eth2 n12}
@@ -800,7 +807,14 @@ node n11 {
 	
 	}
     }
-    services {IPForward DefaultRoute StaticRoute radvd}
+    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
 }
 
 node n12 {
@@ -823,8 +837,8 @@ node n12 {
 	!
     }
     canvas c1
-    iconcoords {761.0 447.0}
-    labelcoords {761.0 479.0}
+    iconcoords {740 420}
+    labelcoords {780 425}
     interface-peer {eth0 n11}
     interface-peer {eth1 n13}
     custom-config {
@@ -872,7 +886,14 @@ node n12 {
 	
 	}
     }
-    services {IPForward StaticRoute SSH radvd}
+    services {UserDefined IPForward StaticRoute SSH radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
     interface-peer {eth2 n10}
 }
 
@@ -887,15 +908,15 @@ node n13 {
 	!
     }
     canvas c1
-    iconcoords {863.0 366.0}
-    labelcoords {863.0 398.0}
+    iconcoords {740 300}
+    labelcoords {740 270}
     interface-peer {eth0 n12}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
 	files=('create_named_conf.sh', )
-	cmdup=('sh create_named_conf.sh', )
+	cmdup=('mount -a', 'sh create_named_conf.sh', )
 	}
     }
     custom-config {
@@ -965,15 +986,15 @@ node n10 {
 	!
     }
     canvas c1
-    iconcoords {781.0 308.0}
-    labelcoords {781.0 340.0}
+    iconcoords {740 540}
+    labelcoords {740 580}
     interface-peer {eth0 n12}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
 	files=('setup_dns.sh', )
-	cmdup=('sh setup_dns.sh', )
+	cmdup=('mount -a', 'sh setup_dns.sh', )
 	}
     }
     custom-config {
@@ -1089,7 +1110,7 @@ link l9 {
 }
 
 annotation a1 {
-    iconcoords {8.0 44.0 293.0 288.0}
+    iconcoords {10 40 290 290}
     type rectangle
     label {Local Network 2}
     labelcolor black
@@ -1103,7 +1124,7 @@ annotation a1 {
 }
 
 annotation a2 {
-    iconcoords {10 318 292 620}
+    iconcoords {10 310 290 620}
     type rectangle
     label {Local Network 1}
     labelcolor black
@@ -1117,7 +1138,7 @@ annotation a2 {
 }
 
 annotation a3 {
-    iconcoords {349 39 591 299}
+    iconcoords {350 40 620 290}
     type rectangle
     label {Server Zone}
     labelcolor black
@@ -1131,7 +1152,7 @@ annotation a3 {
 }
 
 annotation a4 {
-    iconcoords {0.0 0.0 603.0 634.0}
+    iconcoords {0 0 630 630}
     type rectangle
     label {Internal Network}
     labelcolor black

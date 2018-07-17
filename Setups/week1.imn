@@ -9,11 +9,18 @@ node n8 {
 	!
     }
     canvas c1
-    iconcoords {285.0 138.0}
-    labelcoords {285.0 170.0}
+    iconcoords {280 160}
+    labelcoords {280 200}
     custom-image /usr/share/core/icons/normal/pc.gif
     interface-peer {eth0 n6}
-    services {}
+    services {UserDefined SSH } 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
 }
 
 node n6 {
@@ -27,11 +34,18 @@ node n6 {
 	!
     }
     canvas c1
-    iconcoords {70.0 137.0}
-    labelcoords {70.0 169.0}
+    iconcoords {70 160}
+    labelcoords {70 200}
     custom-image /usr/share/core/icons/normal/pc.gif
     interface-peer {eth0 n8}
-    services {}
+    services {UserDefined SSH } 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
 }
 
 link l7 {
@@ -40,7 +54,7 @@ link l7 {
 }
 
 annotation a3 {
-    iconcoords {10 37 377 384}
+    iconcoords {10 40 350 300}
     type rectangle
     label {Hive Network}
     labelcolor black
@@ -54,7 +68,7 @@ annotation a3 {
 }
 
 annotation a4 {
-    iconcoords {0.0 0.0 603.0 634.0}
+    iconcoords {0 0 630 630}
     type rectangle
     label {Internal Network}
     labelcolor black
@@ -72,7 +86,7 @@ canvas c1 {
 }
 
 option global {
-    interface_names yes
+    interface_names no
     ip_addresses no
     ipv6_addresses no
     node_labels yes
