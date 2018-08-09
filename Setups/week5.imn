@@ -290,7 +290,7 @@ node n8 {
 	config {
 	dirs=('/etc/apache2', '/var/run/apache2', '/var/log/apache2', '/var/lock/apache2', '/run/lock', )
 	files=('/etc/apache2/apache2.conf', '/etc/apache2/envvars', 'candles.sh', 'honey.sh', '/etc/apache2/.openssl_ca.cnf', 'ssl.sh', )
-	cmdup=('chown www-data /var/lock/apache2', 'apache2ctl start', 'sh candles.sh', 'sh honey.sh', 'sh ssl.sh', )
+	cmdup=('chown www-data /var/lock/apache2', 'apache2ctl start', 'sh candles.sh', 'sh honey.sh', 'sh ssl.sh','rm -r /var/www/html',  )
 	}
     }
     custom-config {
