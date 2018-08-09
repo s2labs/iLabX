@@ -290,7 +290,7 @@ node n8 {
 	config {
 	dirs=('/etc/apache2', '/var/run/apache2', '/var/log/apache2', '/var/lock/apache2', '/run/lock', )
 	files=('/etc/apache2/apache2.conf', '/etc/apache2/envvars', 'candles.sh', 'honey.sh', '/etc/apache2/.openssl_ca.cnf', 'ssl.sh', )
-	cmdup=('chown www-data /var/lock/apache2', 'apache2ctl start', 'sh candles.sh', 'sh honey.sh', 'sh ssl.sh','rm -r /var/www/html',  )
+	cmdup=('chown www-data /var/lock/apache2', 'apache2ctl start', 'sh candles.sh', 'sh honey.sh', 'sh ssl.sh', 'rm -r /var/www/html', )
 	}
     }
     custom-config {
@@ -313,7 +313,6 @@ node n8 {
 	<VirtualHost *:443>
 	        ServerAdmin admin@candles.com
 	        ServerName candles.b-shop.ilabx
-	        #ServerAlias candles
 	        DocumentRoot "/var/www/candles/"
 	        <Directory /var/www/candles>
 	                Options Indexes FollowSymLinks MultiViews
@@ -334,28 +333,6 @@ node n8 {
 	
 	cat <<EOF >> /etc/apache2/sites-available/honey.conf
 	
-	NameVirtualHost *:443
-	Listen 443
-	<VirtualHost *:443>
-	        ServerAdmin admin@honey.com
-	        ServerName honey.b-shop.ilabx
-	        #ServerAlias honey
-	        DocumentRoot "/var/www/honey/"
-	        <Directory /var/www/honey>
-	                Options Indexes FollowSymLinks MultiViews
-	                AllowOverride All
-	                Require all granted
-	        </Directory>
-	        DirectoryIndex index.html
-	        SSLEngine on
-	        SSLCertificateFile "/etc/apache2/honey/honey.crt"
-	        SSLCertificateKeyFile "/etc/apache2/honey/honey.key"
-	        SSLProtocol TLSv1.1 TLSv1.2
-	        SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256
-	        SSLSessionTickets off
-	        ErrorLog /error.log
-	        CustomLog /access.log combined
-	</VirtualHost>
 	
 	EOF
 	
@@ -473,20 +450,6 @@ node n8 {
 	mkdir -p /etc/apache2/sites-available
 	
 	cat <<EOF > /etc/apache2/sites-available/honey.conf
-	<VirtualHost *:80>
-	        ServerAdmin admin@honey.com
-	        ServerName honey.b-shop.ilabx
-	        #ServerAlias /honey
-	        DocumentRoot "/var/www/honey/"
-	        <Directory /var/www/honey>
-	                Options Indexes FollowSymLinks MultiViews
-	                AllowOverride All
-	                Require all granted
-	        </Directory>
-	        DirectoryIndex index.html
-	        ErrorLog /error.log
-	        CustomLog /access.log combined
-	</VirtualHost>
 	
 	EOF
 	
@@ -517,7 +480,6 @@ node n8 {
 	<VirtualHost *:80>
 	        ServerAdmin admin@candles.com
 	        ServerName candles.b-shop.ilabx
-	        #ServerAlias /candles
 	        DocumentRoot "/var/www/candles/"
 	        <Directory /var/www/candles>
 	                Options Indexes FollowSymLinks MultiViews
@@ -644,7 +606,7 @@ node n8 {
 	Include sites-enabled/*.conf
 	}
     }
-    services {UserDefined DefaultRoute SSH HTTP} 
+    services {DefaultRoute SSH HTTP UserDefined}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -807,7 +769,7 @@ node n11 {
 	
 	}
     }
-    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd} 
+    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -886,7 +848,7 @@ node n12 {
 	
 	}
     }
-    services {UserDefined IPForward StaticRoute SSH radvd} 
+    services {UserDefined IPForward StaticRoute SSH radvd}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
