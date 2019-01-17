@@ -27,7 +27,7 @@
         {
             "name": "2019-1-TUM",
             "branch": "201901-TUM",
-            "start": "2019-01-30T00:00:00.000Z",
+            "start": "2019-01-15T00:00:00.000Z",
             "end": "2019-05-14T23:59:59.999Z",
             "forumUrl": "https://edge.edx.org/courses/course-v1:TUMx+iLabX+2019_T1/discussion/forum/",
             "faqUrl": "https://edge.edx.org/courses/course-v1:TUMx+iLabX+2019_T1/8540f51ffac74523a0f1741f5f44f640/"
