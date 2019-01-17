@@ -1,0 +1,568 @@
+node n1 {
+    type router
+    model PC
+    network-config {
+	hostname host1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:01
+	!
+    }
+    canvas c1
+    iconcoords {70 560}
+    labelcoords {70 600}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n2 {
+    type router
+    model PC
+    network-config {
+	hostname host2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:02
+	!
+    }
+    canvas c1
+    iconcoords {230 560}
+    labelcoords {230 600}
+    interface-peer {eth0 n5}
+    services {SSH UserDefined}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('experiment.sh', )
+	cmdup=('mount -a', 'sh experiment.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:experiment.sh
+	custom-command experiment.sh
+	config {
+	#!/bin/sh
+	
+	touch /root/experiment.py
+	
+	cat <<EOF > /root/experiment.py
+	#!/usr/bin/env python3
+	
+	import socket
+	import sys
+	import datetime
+	import time
+	
+	def main(args):
+	    if len(args) ==1:
+	        print("no arguments given")
+	        return
+	    t= args[1].lower()
+	    if t == "udp":
+	        sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+	    elif t == "tcp":
+	        # todo tcp connection
+	        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+	        sock.connect(('2001:db8:bee:33:0:ff:fe00:6',1337))
+	    elif t != "tcp" and t != "udp":
+	        print("neither udp or tcp as argument received")
+	        return
+	    timeStampFirstMessage = None
+	    for i in range(1,51):
+	        if timeStampFirstMessage is not None:
+	            lastSendAt = datetime.datetime.now()
+	        else:
+	            timeStampFirstMessage = datetime.datetime.now()
+	            print("First message received, counting the time from now")
+	            lastSendAt = timeStampFirstMessage
+	        diff = lastSendAt- timeStampFirstMessage
+	        print("Sending Number: {} at {}.{} seconds".format(i, diff.seconds, diff.microseconds))
+	        if t == "udp":
+	            sock.sendto(bytes("{}".format(i), 'utf-8'), ('2001:db8:bee:33:0:ff:fe00:6',1337))
+	        else:
+	            sock.send(bytes("{} ".format(i), 'utf-8'))
+	        time.sleep(0.5)
+	
+	if __name__ == "__main__":
+	    main(sys.argv)
+	EOF
+	
+	chmod 555 /root/experiment.py
+	}
+    }
+}
+
+node n3 {
+    type router
+    model PC
+    network-config {
+	hostname host3
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:03
+	!
+    }
+    canvas c1
+    iconcoords {70 390}
+    labelcoords {70 430}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n4 {
+    type router
+    model PC
+    network-config {
+	hostname host4
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:04
+	!
+    }
+    canvas c1
+    iconcoords {140 170}
+    labelcoords {140 140}
+    interface-peer {eth0 n6}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n5 {
+    type lanswitch
+    network-config {
+	hostname switch1
+	!
+    }
+    canvas c1
+    iconcoords {150 460}
+    labelcoords {150 505}
+    interface-peer {e0 n1}
+    interface-peer {e1 n2}
+    interface-peer {e2 n3}
+    interface-peer {e3 n6}
+}
+
+node n6 {
+    type router
+    model router
+    network-config {
+	hostname router1
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F3
+	 ipv6 address 2001:DB8:BEE:C1::FE/127
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F2
+	 ipv6 address 2001:DB8:BEE:22::1/64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F1
+	 ipv6 address 2001:DB8:BEE:11::1/64
+	!
+    }
+    canvas c1
+    iconcoords {290 300}
+    labelcoords {315 280}
+    interface-peer {eth0 n5}
+    interface-peer {eth1 n4}
+    interface-peer {eth2 n11}
+    services {UserDefined SSH IPForward DefaultRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default proto static via 2001:DB8:BEE:C1::FF
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:11::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	interface eth1 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:22::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	}
+    }
+}
+
+node n7 {
+    type hub
+    network-config {
+	hostname switch2
+	!
+    }
+    canvas c1
+    iconcoords {500 210}
+    labelcoords {550 215}
+    interface-peer {e0 n8}
+    interface-peer {e1 n9}
+    interface-peer {e3 n11}
+}
+
+node n8 {
+    type router
+    model host
+    network-config {
+	hostname server1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:05
+	!
+    }
+    canvas c1
+    iconcoords {420 150}
+    labelcoords {420 125}
+    interface-peer {eth0 n7}
+    services {UserDefined DefaultRoute SSH HTTP} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n9 {
+    type router
+    model host
+    network-config {
+	hostname server2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:06
+	!
+    }
+    canvas c1
+    iconcoords {580 150}
+    labelcoords {580 125}
+    interface-peer {eth0 n7}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('server.sh', )
+	cmdup=('mount -a', 'sh server.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:server.sh
+	custom-command server.sh
+	config {
+	#!/bin/sh
+	
+	touch /root/server.py
+	
+	cat <<EOF > /root/server.py
+	#!/usr/bin/env python3
+	
+	import socket
+	import sys
+	import datetime
+	
+	def main(args):
+	    #create UDP socket
+	    if len(args) == 1:
+	        print("No argument received")
+	        return
+	    t = args[1].lower()
+	    if t =="udp":
+	        sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+	    elif t == "tcp":
+	        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+	        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	    else:
+	        return 1
+	    print("Started, listening for {} packets on, port 1337".format(t))
+	    server_address=('2001:db8:bee:33:0:ff:fe00:6', 1337)
+	    sock.bind(server_address)
+	    timeStampFirstMessage = None
+	    if t == "tcp":
+	        sock.listen(1)
+	        (conn, addr) = sock.accept()
+	        sock = conn
+	    while True:
+	        data, address = sock.recvfrom(4096)
+	        if data == b'' and t=='tcp':
+	            print("Remote host closed the connection")
+	            return
+	        if timeStampFirstMessage == None:
+	            timeStampFirstMessage = datetime.datetime.now()
+	            print("First message received, counting the time from now")
+	            lastReceivedAt = timeStampFirstMessage
+	        else:
+	            lastReceivedAt = datetime.datetime.now()
+	        diff = lastReceivedAt - timeStampFirstMessage
+	        print("Received Number {}\t    {}.{} seconds after first message received".format(str(data, 'utf-8').replace('\n', ''), diff.seconds, diff.microseconds))
+	
+	if __name__ == "__main__":
+	    main(sys.argv)
+	EOF
+	
+	chmod 555 /root/server.py
+	
+	}
+    }
+    services {DefaultRoute SSH UserDefined}
+}
+
+node n11 {
+    type router
+    model router
+    network-config {
+	hostname router2
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F5
+	 ipv6 address 2001:DB8:BEE:C1::FF/127
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F4
+	 ipv6 address 2001:DB8:BEE:33::1/64
+	!
+    }
+    canvas c1
+    iconcoords {500 300}
+    labelcoords {525 280}
+    interface-peer {eth0 n7}
+    interface-peer {eth1 n6}
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default via 2001:DB8:AA::1
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute
+	custom-command StaticRoute
+	config {
+	files=('staticroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute:staticroute.sh
+	custom-command staticroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add 2001:DB8:BEE:11::/64 proto static via 2001:DB8:BEE:C1::FE
+	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:33::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	}
+    }
+    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+link l1 {
+    nodes {n1 n5}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n2 n5}
+    bandwidth 0
+}
+
+link l3 {
+    nodes {n3 n5}
+    bandwidth 0
+}
+
+link l4 {
+    nodes {n5 n6}
+    bandwidth 0
+}
+
+link l5 {
+    nodes {n4 n6}
+    bandwidth 0
+}
+
+link l6 {
+    nodes {n6 n11}
+    bandwidth 0
+}
+
+link l7 {
+    nodes {n8 n7}
+    bandwidth 0
+}
+
+link l8 {
+    nodes {n9 n7}
+    bandwidth 0
+}
+
+link l10 {
+    nodes {n11 n7}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {10 40 290 290}
+    type rectangle
+    label {Local Network 2}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a2 {
+    iconcoords {10 310 290 620}
+    type rectangle
+    label {Local Network 1}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a3 {
+    iconcoords {350 40 620 290}
+    type rectangle
+    label {Server Zone}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #f8cecc
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {0 0 630 630}
+    type rectangle
+    label {Internal Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #7ea6e0
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names no
+    ip_addresses no
+    ipv6_addresses no
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid no
+    traffic_start 0
+}
+
+option session {
+}
+
