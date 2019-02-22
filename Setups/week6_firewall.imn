@@ -60,7 +60,7 @@ node n4 {
     iconcoords {140 170}
     labelcoords {140 140}
     interface-peer {eth0 n6}
-    services {UserDefined SSH } 
+    services {UserDefined SSH }
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -110,7 +110,7 @@ node n6 {
     interface-peer {eth0 n5}
     interface-peer {eth1 n4}
     interface-peer {eth2 n11}
-    services {UserDefined SSH IPForward DefaultRoute radvd} 
+    services {UserDefined SSH IPForward DefaultRoute radvd}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -305,7 +305,7 @@ node n11 {
 	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
 	}
     }
-    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd} 
+    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -376,7 +376,7 @@ node n12 {
 	};
 	}
     }
-    services {UserDefined SSH IPForward StaticRoute radvd} 
+    services {UserDefined SSH IPForward StaticRoute radvd}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -462,21 +462,23 @@ node n14 {
 	
 	def main(args):
 	    while(True):
-	        ping=ping_pc("2001:db8:bee:33:0:ff:fe00:6")
-	        ssh=ssh2("2001:db8:bee:33:0:ff:fe00:6")
+	        ping=ping_pc("2001:db8:bee:33:0:ff:fe00:5")
+	        ssh=ssh2("2001:db8:bee:33:0:ff:fe00:5")
 	        if not ping and not ssh:
 	            #print("Attacker is using a different IP now")
 	            p=subprocess.run(["ip","addr", "del", "2001:db8:bb::ff:fe00:8/64", "dev", "eth0"])
 	            p=subprocess.run(["ip","addr", "add", "2001:db8:bb::ff:fe00:9/64", "dev", "eth0"])
 	            # wait for DAD to complete for global scope
-	            time.sleep(5)
-	            ping_pc("2001:db8:bee:33:0:ff:fe00:6")
-	            ssh2("2001:db8:bee:33:0:ff:fe00:6")
-	            p=subprocess.run(["ifconfig", "eth0", "inet6", "del", "2001:db8:bb::ff:fe00:9/64"])
-	            p=subprocess.run(["ifconfig", "eth0", "inet6", "add", "2001:db8:bb::ff:fe00:8/64"])
-	        #else:
+	            time.sleep(4)
+	            ping_pc("2001:db8:bee:33:0:ff:fe00:5")
+	            ssh2("2001:db8:bee:33:0:ff:fe00:5")
+	            time.sleep(3)
+	            p=subprocess.run(["ip","addr", "del", "2001:db8:bb::ff:fe00:9/64", "dev", "eth0"])
+	            p=subprocess.run(["ip","addr", "add", "2001:db8:bb::ff:fe00:8/64", "dev", "eth0"])
+	            time.sleep(3)
+	        else:
 	        #    print("Please prevent the Attacker from using those protocols")
-	        time.sleep(10)
+	            time.sleep(10)
 	
 	if __name__ == "__main__":
 	    main(sys.argv)
@@ -614,7 +616,7 @@ canvas c1 {
 }
 
 option global {
-    interface_names no
+    interface_names yes
     ip_addresses no
     ipv6_addresses no
     node_labels yes
