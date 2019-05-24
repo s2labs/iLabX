@@ -1,0 +1,716 @@
+node n1 {
+    type router
+    model PC
+    network-config {
+	hostname host1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:01
+	!
+    }
+    canvas c1
+    iconcoords {70 560}
+    labelcoords {70 600}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n2 {
+    type router
+    model PC
+    network-config {
+	hostname host2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:02
+	!
+    }
+    canvas c1
+    iconcoords {230 560}
+    labelcoords {230 600}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n3 {
+    type router
+    model PC
+    network-config {
+	hostname host3
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:03
+	!
+    }
+    canvas c1
+    iconcoords {70 390}
+    labelcoords {70 430}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n4 {
+    type router
+    model PC
+    network-config {
+	hostname host4
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:04
+	!
+    }
+    canvas c1
+    iconcoords {140 170}
+    labelcoords {140 140}
+    interface-peer {eth0 n6}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+node n5 {
+    type lanswitch
+    network-config {
+	hostname switch1
+	!
+    }
+    canvas c1
+    iconcoords {150 460}
+    labelcoords {150 505}
+    interface-peer {e0 n1}
+    interface-peer {e1 n2}
+    interface-peer {e2 n3}
+    interface-peer {e3 n6}
+}
+
+node n6 {
+    type router
+    model router
+    network-config {
+	hostname router1
+	!
+	interface eth3
+	 mac address 02:00:00:00:00:FA
+	 ipv6 address 2001:DB8:BEE:C2::FE/127
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F3
+	 ipv6 address 2001:DB8:BEE:C1::FE/127
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F2
+	 ipv6 address 2001:DB8:BEE:22::1/64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F1
+	 ipv6 address 2001:DB8:BEE:11::1/64
+	!
+    }
+    canvas c1
+    iconcoords {290 300}
+    labelcoords {315 280}
+    interface-peer {eth0 n5}
+    interface-peer {eth1 n4}
+    interface-peer {eth2 n11}
+    services {SSH IPForward DefaultRoute radvd UserDefined}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('create_configs.sh', 'live_routing_table.sh', )
+	cmdup=('mount -a', 'sh create_configs.sh', 'sh live_routing_table.sh &', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:live_routing_table.sh
+	custom-command live_routing_table.sh
+	config {
+	#!/bin/sh
+	
+	touch /root/live_routing_table
+	
+	while :
+	do
+		echo "" >> /root/live_routing_table
+		echo "current routing table --- router1" >> /root/live_routing_table
+		ip -6 r >> /root/live_routing_table
+		sleep 2
+	done
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:create_configs.sh
+	custom-command create_configs.sh
+	config {
+	#!/bin/sh
+	
+	touch /etc/quagga/zebra.conf
+	touch /etc/quagga/ripngd.conf
+	touch /etc/quagga/ospf6d.conf
+	mkdir /run/quagga
+	
+	cat <<EOF > /etc/quagga/zebra.conf
+	interface eth0
+	  ipv6 address 2001:db8:bee:11::1/64
+	!
+	interface eth1
+	  ipv6 address 2001:db8:bee:22::1/64
+	!
+	interface eth2
+	  ipv6 address 2001:db8:bee:c1::fe/127
+	!
+	interface eth3
+	  ipv6 address 2001:db8:bee:c2::fe/127
+	!
+	log stdout
+	EOF
+	
+	cat <<EOF > /etc/quagga/ripngd.conf
+	router ripng
+	  network eth2
+	  network eth3
+	  redistribute connected
+	  timers basic 30 60 60
+	!
+	log stdout
+	EOF
+	
+	cat <<EOF > /etc/quagga/ospf6d.conf
+	router ospf6
+	  router-id 1.1.1.1
+	  interface eth2 area 0.0.0.0
+	  interface eth3 area 0.0.0.0
+	  redistribute connected
+	!
+	log stdout
+	EOF
+	
+	zebra -d
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default proto static via 2001:DB8:BEE:C1::FF
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:11::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	interface eth1 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:22::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	}
+    }
+    interface-peer {eth3 n7}
+}
+
+node n8 {
+    type router
+    model host
+    network-config {
+	hostname server1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:05
+	!
+    }
+    canvas c1
+    iconcoords {420 150}
+    labelcoords {420 125}
+    interface-peer {eth0 n11}
+}
+
+node n11 {
+    type router
+    model router
+    network-config {
+	hostname router2
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:FE
+	 ipv6 address 2001:DB8:BEE:C3::FF/127
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F4
+	 ipv6 address 2001:DB8:BEE:33::1/64
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F5
+	 ipv6 address 2001:DB8:BEE:C1::FF/127
+	!
+    }
+    canvas c1
+    iconcoords {500 300}
+    labelcoords {535 280}
+    interface-peer {eth1 n6}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('create_configs.sh', 'live_routing_table.sh', )
+	cmdup=('mount -a', 'sh create_configs.sh', 'sh live_routing_table.sh &', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:live_routing_table.sh
+	custom-command live_routing_table.sh
+	config {
+	#!/bin/sh
+	
+	touch /root/live_routing_table
+	
+	while :
+	do
+		echo "" >> /root/live_routing_table
+		echo "current routing table --- router2" >> /root/live_routing_table
+		ip -6 r >> /root/live_routing_table
+		sleep 2
+	done
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:create_configs.sh
+	custom-command create_configs.sh
+	config {
+	#!/bin/sh
+	
+	touch /etc/quagga/zebra.conf
+	touch /etc/quagga/ripngd.conf
+	touch /etc/quagga/ospf6d.conf
+	mkdir /run/quagga
+	
+	cat <<EOF > /etc/quagga/zebra.conf
+	interface eth0
+	  ipv6 address 2001:db8:bee:33::1/64
+	!
+	interface eth1
+	  ipv6 address 2001:db8:bee:c1::ff/127
+	!
+	interface eth2
+	  ipv6 address 2001:db8:bee:c3::ff/127
+	!
+	log stdout
+	EOF
+	
+	cat <<EOF > /etc/quagga/ripngd.conf
+	router ripng
+	  network eth1
+	  network eth2
+	  redistribute connected
+	  timers basic 30 60 60
+	!
+	log stdout
+	EOF
+	
+	cat <<EOF > /etc/quagga/ospf6d.conf
+	router ospf6
+	  router-id 1.1.1.2
+	  interface eth1 area 0.0.0.0
+	  interface eth2 area 0.0.0.0
+	  redistribute connected
+	!
+	log stdout
+	EOF
+	
+	zebra -d
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default via 2001:DB8:AA::1
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute
+	custom-command StaticRoute
+	config {
+	files=('staticroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute:staticroute.sh
+	custom-command staticroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add 2001:DB8:BEE:11::/64 proto static via 2001:DB8:BEE:C1::FE
+	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:33::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	}
+    }
+    services {SSH IPForward DefaultRoute StaticRoute radvd UserDefined}
+    interface-peer {eth0 n8}
+    interface-peer {eth2 n7}
+}
+
+node n7 {
+    type router
+    model router
+    network-config {
+	hostname router3
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:FD
+	 ipv6 address 2001:DB8:BEE:44::1/64
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:FC
+	 ipv6 address 2001:DB8:BEE:C3::FE/127
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:FB
+	 ipv6 address 2001:DB8:BEE:C2::FF/127
+	!
+    }
+    canvas c1
+    iconcoords {395 450}
+    labelcoords {445 455}
+    interface-peer {eth0 n6}
+    interface-peer {eth1 n11}
+    interface-peer {eth2 n9}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('create_configs.sh', 'live_routing_table.sh', )
+	cmdup=('mount -a', 'sh create_configs.sh', 'sh live_routing_table.sh &', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:live_routing_table.sh
+	custom-command live_routing_table.sh
+	config {
+	#!/bin/sh
+	
+	touch /root/live_routing_table
+	
+	while :
+	do
+		echo "" >> /root/live_routing_table
+		echo "current routing table --- router3" >> /root/live_routing_table
+		ip -6 r >> /root/live_routing_table
+		sleep 2
+	done
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:create_configs.sh
+	custom-command create_configs.sh
+	config {
+	#!/bin/sh
+	
+	touch /etc/quagga/zebra.conf
+	touch /etc/quagga/ripngd.conf
+	touch /etc/quagga/ospf6d.conf
+	mkdir /run/quagga
+	
+	cat <<EOF > /etc/quagga/zebra.conf
+	interface eth0
+	  ipv6 address 2001:db8:bee:c2::ff/127
+	!
+	interface eth1
+	  ipv6 address 2001:db8:bee:c3::fe/127
+	!
+	interface eth2
+	  ipv6 address 2001:db8:bee:44::1/64
+	!
+	log stdout
+	EOF
+	
+	cat <<EOF > /etc/quagga/ripngd.conf
+	router ripng
+	  network eth0
+	  network eth1
+	  redistribute connected
+	  timers basic 30 60 60
+	!
+	log stdout
+	EOF
+	
+	cat <<EOF > /etc/quagga/ospf6d.conf
+	router ospf6
+	  router-id 1.1.1.3
+	  interface eth0 area 0.0.0.0
+	  interface eth1 area 0.0.0.0
+	  redistribute connected
+	!
+	log stdout
+	EOF
+	
+	zebra -d
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth2 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:44::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	}
+    }
+    services {SSH IPForward radvd UserDefined}
+}
+
+node n9 {
+    type router
+    model PC
+    network-config {
+	hostname host5
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:FF
+	!
+    }
+    canvas c1
+    iconcoords {395 580}
+    labelcoords {395 620}
+    interface-peer {eth0 n7}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -a', )
+	}
+    }
+}
+
+link l1 {
+    nodes {n1 n5}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n2 n5}
+    bandwidth 0
+}
+
+link l3 {
+    nodes {n3 n5}
+    bandwidth 0
+}
+
+link l4 {
+    nodes {n5 n6}
+    bandwidth 0
+}
+
+link l5 {
+    nodes {n4 n6}
+    bandwidth 0
+}
+
+link l6 {
+    nodes {n6 n11}
+    bandwidth 0
+}
+
+link l7 {
+    nodes {n11 n8}
+    bandwidth 0
+}
+
+link l8 {
+    nodes {n7 n6}
+    bandwidth 0
+}
+
+link l9 {
+    nodes {n7 n11}
+    bandwidth 0
+}
+
+link l10 {
+    nodes {n7 n9}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {10 40 290 290}
+    type rectangle
+    label {Local Network 2}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a2 {
+    iconcoords {10 310 290 620}
+    type rectangle
+    label {Local Network 1}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a3 {
+    iconcoords {350 525 600 620}
+    type rectangle
+    label {Local Network 3}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {350 40 620 290}
+    type rectangle
+    label {Server Zone}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #f8cecc
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a5 {
+    iconcoords {0 0 630 630}
+    type rectangle
+    label {Internal Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #7ea6e0
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names yes
+    ip_addresses no
+    ipv6_addresses no
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid no
+    traffic_start 0
+}
+
+option session {
+}
+
