@@ -12,7 +12,7 @@ node n1 {
     iconcoords {70 560}
     labelcoords {70 600}
     interface-peer {eth0 n5}
-    services {UserDefined SSH} 
+    services {UserDefined SSH}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -36,7 +36,7 @@ node n2 {
     iconcoords {230 560}
     labelcoords {230 600}
     interface-peer {eth0 n5}
-    services {UserDefined SSH} 
+    services {UserDefined SSH}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -60,7 +60,7 @@ node n3 {
     iconcoords {70 390}
     labelcoords {70 430}
     interface-peer {eth0 n5}
-    services {UserDefined SSH} 
+    services {UserDefined SSH}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -84,7 +84,7 @@ node n4 {
     iconcoords {140 170}
     labelcoords {140 140}
     interface-peer {eth0 n6}
-    services {UserDefined SSH} 
+    services {UserDefined SSH}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -388,22 +388,6 @@ node n11 {
 	}
     }
     custom-config {
-	custom-config-id service:StaticRoute
-	custom-command StaticRoute
-	config {
-	files=('staticroute.sh', )
-	}
-    }
-    custom-config {
-	custom-config-id service:StaticRoute:staticroute.sh
-	custom-command staticroute.sh
-	config {
-	#!/bin/sh
-	/sbin/ip -6 route add 2001:DB8:BEE:11::/64 proto static via 2001:DB8:BEE:C1::FE
-	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
-	}
-    }
-    custom-config {
 	custom-config-id service:radvd
 	custom-command radvd
 	config {
@@ -424,7 +408,7 @@ node n11 {
 	
 	}
     }
-    services {SSH IPForward DefaultRoute StaticRoute radvd UserDefined}
+    services {IPForward DefaultRoute SSH radvd UserDefined}
     interface-peer {eth0 n8}
     interface-peer {eth2 n7}
 }
@@ -564,7 +548,7 @@ node n9 {
     iconcoords {395 580}
     labelcoords {395 620}
     interface-peer {eth0 n7}
-    services {UserDefined SSH} 
+    services {UserDefined SSH}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
