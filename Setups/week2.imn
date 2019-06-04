@@ -17,7 +17,7 @@ node n1 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -41,7 +41,7 @@ node n2 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -65,7 +65,7 @@ node n3 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -89,7 +89,7 @@ node n4 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -148,7 +148,7 @@ node n6 {
 	custom-command UserDefined
 	config {
 	files=('setMtu.sh', )
-	cmdup=('mount -a', 'sh setMtu.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setMtu.sh', )
 	}
     }
     custom-config {
@@ -210,7 +210,7 @@ node n11 {
 	custom-command UserDefined
 	config {
 	files=('setMtu.sh', )
-	cmdup=('mount -a', 'sh setMtu.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setMtu.sh', )
 	}
     }
     custom-config {

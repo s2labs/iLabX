@@ -17,7 +17,7 @@ node n1 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -41,7 +41,7 @@ node n2 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -65,7 +65,7 @@ node n3 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -89,7 +89,7 @@ node n4 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -139,7 +139,7 @@ node n6 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
     custom-config {
@@ -240,7 +240,7 @@ node n8 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -264,7 +264,7 @@ node n9 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -288,7 +288,7 @@ node n10 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -377,7 +377,7 @@ node n11 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -448,7 +448,7 @@ node n12 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -472,7 +472,7 @@ node n13 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -496,7 +496,7 @@ node n14 {
 	custom-command UserDefined
 	config {
 	files=('hack.sh', )
-	cmdup=('mount -a', 'sh hack.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh hack.sh', )
 	}
     }
     custom-config {

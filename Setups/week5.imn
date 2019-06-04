@@ -18,7 +18,7 @@ node n1 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -52,7 +52,7 @@ node n2 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -86,7 +86,7 @@ node n3 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -120,7 +120,7 @@ node n4 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
 	}
     }
     custom-config {
@@ -180,7 +180,7 @@ node n6 {
 	custom-command UserDefined
 	config {
 	files=('setup_resolver.sh', )
-	cmdup=('mount -a', 'sh setup_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setup_resolver.sh', )
 	}
     }
     custom-config {
@@ -611,7 +611,7 @@ node n8 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -635,7 +635,7 @@ node n9 {
 	custom-command UserDefined
 	config {
 	files=('setup_dns.sh', )
-	cmdup=('mount -a', 'sh setup_dns.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setup_dns.sh', )
 	}
     }
     custom-config {
@@ -774,7 +774,7 @@ node n11 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -853,7 +853,7 @@ node n12 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
     interface-peer {eth2 n10}
@@ -878,7 +878,7 @@ node n13 {
 	custom-command UserDefined
 	config {
 	files=('create_named_conf.sh', )
-	cmdup=('mount -a', 'sh create_named_conf.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh create_named_conf.sh', )
 	}
     }
     custom-config {
@@ -956,7 +956,7 @@ node n10 {
 	custom-command UserDefined
 	config {
 	files=('setup_dns.sh', )
-	cmdup=('mount -a', 'sh setup_dns.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setup_dns.sh', )
 	}
     }
     custom-config {

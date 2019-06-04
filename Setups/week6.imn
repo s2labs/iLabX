@@ -18,7 +18,7 @@ node n1 {
 	custom-command UserDefined
 	config {
 	files=('resolv.sh', )
-	cmdup=('mount -a', 'sh resolv.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh resolv.sh', )
 	}
     }
     custom-config {
@@ -121,7 +121,7 @@ node n4 {
 	custom-command UserDefined
 	config {
 	files=('resolv.sh', )
-	cmdup=('mount -a', 'sh resolv.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh resolv.sh', )
 	}
     }
     custom-config {
@@ -181,7 +181,7 @@ node n6 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
     custom-config {
@@ -279,7 +279,7 @@ node n9 {
 	custom-command UserDefined
 	config {
 	files=('setupDNS.sh', )
-	cmdup=('mount -a', 'sh setupDNS.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setupDNS.sh', )
 	}
     }
     custom-config {
@@ -337,7 +337,7 @@ node n10 {
 	custom-command UserDefined
 	config {
 	files=('configureNAT64.sh', )
-	cmdup=('mount -a', 'sh configureNAT64.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configureNAT64.sh', )
 	}
     }
     custom-config {
@@ -475,7 +475,7 @@ node n11 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	cmdup=('mount -a', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
 	}
     }
 }
@@ -509,7 +509,7 @@ node n12 {
 	custom-command UserDefined
 	config {
 	files=('configureIP.sh', )
-	cmdup=('mount -a', 'sh configureIP.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configureIP.sh', )
 	}
     }
     custom-config {
@@ -599,7 +599,7 @@ node n13 {
 	custom-command UserDefined
 	config {
 	files=('configureIP.sh', )
-	cmdup=('mount -a', 'sh configureIP.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configureIP.sh', )
 	}
     }
     custom-config {
