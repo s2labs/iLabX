@@ -17,8 +17,26 @@ node n1 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
+	files=('configure_resolver.sh', 'add_ilabxCA.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'sh add_ilabxCA.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:add_ilabxCA.sh
+	custom-command add_ilabxCA.sh
+	config {
+	#!/bin/bash
+	
+	path=/home/ilab/.mozilla/firefox
+	# find the randomly named default profile of firefox
+	if [[ $(grep '\[Profile[^0]\]' $path/profiles.ini) ]]; then
+	   profile=$(grep -E '^\[Profile|^Path|^Default' $path/profiles.ini | grep -1 '^Default=1' | grep '^Path' | cut -c6-)
+	else 
+	   profile=$(grep 'Path=' $path/profiles.ini | sed 's/^Path=//')
+	fi
+	
+	# add the ilabX CA to that profile as trusted
+	certutil -A -d sql:/home/ilab/.mozilla/firefox/$profile -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC
 	}
     }
     custom-config {
@@ -51,8 +69,26 @@ node n2 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
+	files=('configure_resolver.sh', 'add_ilabxCA.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'sh add_ilabxCA.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:add_ilabxCA.sh
+	custom-command add_ilabxCA.sh
+	config {
+	#!/bin/bash
+	
+	path=/home/ilab/.mozilla/firefox
+	# find the randomly named default profile of firefox
+	if [[ $(grep '\[Profile[^0]\]' $path/profiles.ini) ]]; then
+	   profile=$(grep -E '^\[Profile|^Path|^Default' $path/profiles.ini | grep -1 '^Default=1' | grep '^Path' | cut -c6-)
+	else 
+	   profile=$(grep 'Path=' $path/profiles.ini | sed 's/^Path=//')
+	fi
+	
+	# add the ilabX CA to that profile as trusted
+	certutil -A -d sql:/home/ilab/.mozilla/firefox/$profile -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC
 	}
     }
     custom-config {
@@ -85,8 +121,26 @@ node n3 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
+	files=('configure_resolver.sh', 'add_ilabxCA.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'sh add_ilabxCA.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:add_ilabxCA.sh
+	custom-command add_ilabxCA.sh
+	config {
+	#!/bin/bash
+	
+	path=/home/ilab/.mozilla/firefox
+	# find the randomly named default profile of firefox
+	if [[ $(grep '\[Profile[^0]\]' $path/profiles.ini) ]]; then
+	   profile=$(grep -E '^\[Profile|^Path|^Default' $path/profiles.ini | grep -1 '^Default=1' | grep '^Path' | cut -c6-)
+	else 
+	   profile=$(grep 'Path=' $path/profiles.ini | sed 's/^Path=//')
+	fi
+	
+	# add the ilabX CA to that profile as trusted
+	certutil -A -d sql:/home/ilab/.mozilla/firefox/$profile -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC
 	}
     }
     custom-config {
@@ -119,8 +173,26 @@ node n4 {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
 	config {
-	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
+	files=('configure_resolver.sh', 'add_ilabxCA.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'sh add_ilabxCA.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:add_ilabxCA.sh
+	custom-command add_ilabxCA.sh
+	config {
+	#!/bin/bash
+	
+	path=/home/ilab/.mozilla/firefox
+	# find the randomly named default profile of firefox
+	if [[ $(grep '\[Profile[^0]\]' $path/profiles.ini) ]]; then
+	   profile=$(grep -E '^\[Profile|^Path|^Default' $path/profiles.ini | grep -1 '^Default=1' | grep '^Path' | cut -c6-)
+	else 
+	   profile=$(grep 'Path=' $path/profiles.ini | sed 's/^Path=//')
+	fi
+	
+	# add the ilabX CA to that profile as trusted
+	certutil -A -d sql:/home/ilab/.mozilla/firefox/$profile -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC
 	}
     }
     custom-config {
