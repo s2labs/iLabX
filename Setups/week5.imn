@@ -18,7 +18,7 @@ node n1 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
 	}
     }
     custom-config {
@@ -52,7 +52,7 @@ node n2 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
 	}
     }
     custom-config {
@@ -86,7 +86,7 @@ node n3 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
 	}
     }
     custom-config {
@@ -120,7 +120,7 @@ node n4 {
 	custom-command UserDefined
 	config {
 	files=('configure_resolver.sh', )
-	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configure_resolver.sh', 'certutil -A -d sql:/home/ilab/.mozilla/firefox/w4y39w61.default -i /etc/ssl/certs/ilabxCA.pem -n ilabX-CA -t TC,TC,TC', )
 	}
     }
     custom-config {
@@ -289,159 +289,13 @@ node n8 {
 	custom-command HTTP
 	config {
 	dirs=('/etc/apache2', '/var/run/apache2', '/var/log/apache2', '/var/lock/apache2', '/run/lock', )
-	files=('/etc/apache2/apache2.conf', '/etc/apache2/envvars', 'candles.sh', 'honey.sh', '/etc/apache2/.openssl_ca.cnf', 'ssl.sh', )
-	cmdup=('chown www-data /var/lock/apache2', 'apache2ctl start', 'sh candles.sh', 'sh honey.sh', 'sh ssl.sh', 'rm -r /var/www/html', )
+	files=('/etc/apache2/apache2.conf', '/etc/apache2/envvars', 'config-hosts.sh', )
+	cmdup=('chown www-data /var/lock/apache2', 'apache2ctl start', 'rm -r /var/www/html', 'sh config-hosts.sh', )
 	}
     }
     custom-config {
-	custom-config-id service:HTTP:ssl.sh
-	custom-command ssl.sh
-	config {
-	#!/bin/bash
-	
-	mkdir -p /etc/apache2/candles
-	mkdir -p /etc/apache2/honey
-	
-	openssl req -nodes -x509 -newkey rsa:2048 -keyout /etc/apache2/candles/candles.key -out /etc/apache2/candles/candles.crt -config /etc/apache2/.openssl_ca.cnf
-	
-	openssl req -nodes -x509 -newkey rsa:2048 -keyout /etc/apache2/honey/honey.key -out /etc/apache2/honey/honey.crt -config /etc/apache2/.openssl_ca.cnf
-	
-	cat <<EOF >> /etc/apache2/sites-available/candles.conf
-	
-	NameVirtualHost *:443
-	Listen 443
-	<VirtualHost *:443>
-	        ServerAdmin admin@candles.com
-	        ServerName candles.b-shop.ilabx
-	        DocumentRoot "/var/www/candles/"
-	        <Directory /var/www/candles>
-	                Options Indexes FollowSymLinks MultiViews
-	                AllowOverride All
-	                Require all granted
-	        </Directory>
-	        DirectoryIndex index.html
-	        SSLEngine on
-	        SSLCertificateFile "/etc/apache2/candles/candles.crt"
-	        SSLCertificateKeyFile "/etc/apache2/candles/candles.key"
-	        SSLProtocol TLSv1.1 TLSv1.2
-	        SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256
-	        SSLSessionTickets off
-	        ErrorLog /error.log
-	        CustomLog /access.log combined
-	</VirtualHost>
-	EOF
-	
-	cat <<EOF >> /etc/apache2/sites-available/honey.conf
-	
-	
-	EOF
-	
-	a2ensite candles.conf
-	a2ensite honey.conf
-	
-	service apache2 restart
-	}
-    }
-    custom-config {
-	custom-config-id service:HTTP:/etc/apache2/.openssl_ca.cnf
-	custom-command /etc/apache2/.openssl_ca.cnf
-	config {
-	# Simple Signing CA
-	
-	# The [default] section contains global constants that can be referred to from
-	# the entire configuration file. It may also hold settings pertaining to more
-	# than one openssl command.
-	
-	[ default ]
-	ca                      = ca			# CA name
-	dir                     = .                     # Top dir
-	
-	# The next part of the configuration file is used by the openssl req command.
-	# It defines the CA's key pair, its DN, and the desired extensions for the CA
-	# certificate.
-	
-	[ req ]
-	default_bits            = 2048                  # RSA key size
-	encrypt_key             = yes                   # Protect private key
-	default_md              = sha256                # MD to use
-	utf8                    = yes                   # Input is UTF-8
-	string_mask             = utf8only              # Emit UTF-8 strings
-	prompt                  = no                    # Don't prompt for DN
-	distinguished_name      = ca_dn                 # DN section
-	x509_extensions		= v3_ca			# The extensions to add to the cert
-	req_extensions          = ca_reqext             # Desired extensions
-	
-	[ ca_dn ]
-	countryName		= "DE"
-	localityName		= "Munich"
-	0.organizationName	= "TU Muenchen"
-	organizationalUnitName	= "I8"
-	commonName              = "I8 iLab CA"
-	
-	[ ca_reqext ]
-	keyUsage                = critical,keyCertSign,cRLSign
-	basicConstraints        = critical,CA:true,pathlen:0
-	subjectKeyIdentifier    = hash
-	
-	# The remainder of the configuration file is used by the openssl ca command.
-	# The CA section defines the locations of CA assets, as well as the policies
-	# applying to the CA.
-	
-	[ ca ]
-	default_ca              = DEFAULT_ca		# The default CA section
-	
-	[ DEFAULT_ca ]
-	certificate             = $dir/$ca.crt		# The CA cert
-	private_key             = $dir/$ca.key 		# CA private key
-	new_certs_dir           = $dir/pem   		# Certificate archive
-	serial                  = $dir/db/$ca.crt.srl 	# Serial number file
-	crlnumber               = $dir/db/$ca.crl.srl 	# CRL number file
-	database                = $dir/db/$ca.db    	# Index file
-	unique_subject          = no                    # Require unique subject
-	default_days            = 730                   # How long to certify for
-	default_md              = sha256                # MD to use
-	policy                  = match_pol             # Default naming policy
-	email_in_dn             = no                    # Add email to cert DN
-	preserve                = no                    # Keep passed DN ordering
-	name_opt                = ca_default            # Subject DN display options
-	cert_opt                = ca_default            # Certificate display options
-	copy_extensions         = copy                  # Copy extensions from CSR
-	x509_extensions		= v3_ca			# The extensions to add to the cert
-	crl_extensions          = crl_ext               # CRL extensions
-	
-	# Naming policies control which parts of a DN end up in the certificate and
-	# under what circumstances certification should be denied.
-	
-	[ match_pol ]
-	organizationName        = match                 # Must match
-	organizationalUnitName  = optional              # Included if present
-	commonName              = supplied              # Must be present
-	
-	# Certificate extensions define what types of certificates the CA is able to
-	# create.
-	
-	[ server_ext ]
-	keyUsage                = critical,digitalSignature,keyEncipherment
-	basicConstraints        = CA:false
-	extendedKeyUsage        = serverAuth,clientAuth
-	subjectKeyIdentifier    = hash
-	authorityKeyIdentifier  = keyid:always,issuer:always
-	
-	# CRL extensions exist solely to point to the CA certificate that has issued
-	# the CRL.
-	
-	[ crl_ext ]
-	authorityKeyIdentifier  = keyid:always,issuer:always
-	
-	[ v3_ca ]
-	subjectKeyIdentifier	= hash
-	basicConstraints        = CA:true
-	authorityKeyIdentifier	= keyid:always,issuer:always
-	}
-    }
-    custom-config {
-	custom-config-id service:HTTP:honey.sh
-	custom-command honey.sh
+	custom-config-id service:HTTP:config-hosts.sh
+	custom-command config-hosts.sh
 	config {
 	#!/bin/sh
 	rm /var/www/index.html
@@ -449,6 +303,7 @@ node n8 {
 	mkdir -p /etc/apache2/sites-enabled
 	mkdir -p /etc/apache2/sites-available
 	
+	# base  config for honey
 	cat <<EOF > /etc/apache2/sites-available/honey.conf
 	
 	EOF
@@ -464,37 +319,42 @@ node n8 {
 	htpasswd -c -b /var/www/honey/special/.htpasswd bee special
 	a2ensite honey.conf
 	
-	service apache2 restart
-	}
-    }
-    custom-config {
-	custom-config-id service:HTTP:candles.sh
-	custom-command candles.sh
-	config {
-	#!/bin/sh
-	
-	mkdir -p /etc/apache2/sites-enabled
-	mkdir -p /etc/apache2/sites-available
-	
+	# base  config for candles
 	cat <<EOF > /etc/apache2/sites-available/candles.conf
 	<VirtualHost *:80>
 	        ServerAdmin admin@candles.com
 	        ServerName candles.b-shop.ilabx
-	        DocumentRoot "/var/www/candles/"
-	        <Directory /var/www/candles>
-	                Options Indexes FollowSymLinks MultiViews
-	                AllowOverride All
-	                Require all granted
-	        </Directory>
-	        DirectoryIndex index.html
-	        ErrorLog /error.log
-	        CustomLog /access.log combined
+	        DocumentRoot /var/www/candles
+	</VirtualHost>
+	
+	<VirtualHost *:443>
+	        ServerAdmin admin@candles.com
+	        ServerName candles.b-shop.ilabx
+	        DocumentRoot /var/www/candles
+	        SSLEngine on
+	        SSLCertificateFile "/etc/ssl/certs/candles.pem"
+	        SSLCertificateKeyFile "/etc/ssl/private/candles.key"
+	        SSLProtocol TLSv1.1 TLSv1.2
+	        SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256
+	        SSLSessionTickets off
 	</VirtualHost>
 	EOF
 	
 	a2ensite candles.conf
 	
+	# base  config for base pages before virtualHosts
+	cat <<EOF > /etc/apache2/sites-available/basic.conf
+	<VirtualHost *:80>
+	        ServerAdmin admin@localhost
+	        ServerName localhost
+	        DocumentRoot /var/www
+	</VirtualHost>
+	EOF
+	a2ensite basic.conf
+	
+	
 	service apache2 restart
+	
 	}
     }
     custom-config {
@@ -572,10 +432,15 @@ node n8 {
 	NameVirtualHost *:80
 	Listen 80
 	
+	NameVirtualHost *:80
+	Listen 80
+	
 	<IfModule mod_ssl.c>
+	    NameVirtualHost *:443
 	    Listen 443
 	</IfModule>
 	<IfModule mod_gnutls.c>
+	    NameVirtualHost *:443
 	    Listen 443
 	</IfModule>
 	
@@ -589,19 +454,11 @@ node n8 {
 	ServerSignature On
 	TraceEnable Off
 	
-	<VirtualHost *:80>
-		ServerAdmin webmaster@localhost
-		ServerName localhost
-		DocumentRoot /var/www
-		<Directory /var/www/>
-			Options +Indexes +FollowSymLinks +MultiViews
-			AllowOverride None
-			Require all granted
-		</Directory>
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		LogLevel warn
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
-	</VirtualHost>
+	<Directory /var/www/>
+	        Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Require all granted
+	</Directory>
 	
 	Include sites-enabled/*.conf
 	}
