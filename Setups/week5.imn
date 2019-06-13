@@ -418,7 +418,6 @@ node n8 {
 	cat <<EOF > /etc/apache2/sites-available/basic.conf
 	<VirtualHost *:80>
 	        ServerAdmin admin@localhost
-	        ServerName localhost
 	        DocumentRoot /var/www
 	</VirtualHost>
 	EOF
