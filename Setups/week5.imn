@@ -406,7 +406,7 @@ node n8 {
 	        SSLEngine on
 	        SSLCertificateFile "/etc/ssl/certs/candles.pem"
 	        SSLCertificateKeyFile "/etc/ssl/private/candles.key"
-	        SSLProtocol TLSv1.1 TLSv1.2
+	        SSLProtocol TLSv1.2
 	        SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256
 	        SSLSessionTickets off
 	</VirtualHost>
