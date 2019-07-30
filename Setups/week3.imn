@@ -138,7 +138,7 @@ node n6 {
     interface-peer {eth0 n5}
     interface-peer {eth1 n4}
     interface-peer {eth2 n11}
-    services {SSH IPForward DefaultRoute radvd UserDefined}
+    services {IPForward SSH radvd UserDefined}
     custom-config {
 	custom-config-id service:UserDefined
 	custom-command UserDefined
@@ -212,21 +212,6 @@ node n6 {
 	EOF
 	
 	zebra -d
-	}
-    }
-    custom-config {
-	custom-config-id service:DefaultRoute
-	custom-command DefaultRoute
-	config {
-	files=('defaultroute.sh', )
-	}
-    }
-    custom-config {
-	custom-config-id service:DefaultRoute:defaultroute.sh
-	custom-command defaultroute.sh
-	config {
-	#!/bin/sh
-	/sbin/ip -6 route add default proto static via 2001:DB8:BEE:C1::FF
 	}
     }
     custom-config {
@@ -369,22 +354,6 @@ node n11 {
 	EOF
 	
 	zebra -d
-	}
-    }
-    custom-config {
-	custom-config-id service:DefaultRoute
-	custom-command DefaultRoute
-	config {
-	files=('defaultroute.sh', )
-	}
-    }
-    custom-config {
-	custom-config-id service:DefaultRoute:defaultroute.sh
-	custom-command defaultroute.sh
-	config {
-	#!/bin/sh
-	/sbin/ip -6 route add default via 2001:DB8:AA::1
-	
 	}
     }
     custom-config {
@@ -531,7 +500,7 @@ node n7 {
 	
 	}
     }
-    services {SSH IPForward radvd UserDefined}
+    services {IPForward DefaultMulticastRoute SSH radvd UserDefined}
 }
 
 node n9 {
