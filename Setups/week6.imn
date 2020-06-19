@@ -1,0 +1,774 @@
+node n1 {
+    type router
+    model PC
+    network-config {
+	hostname host1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:01
+	!
+    }
+    canvas c1
+    iconcoords {70 560}
+    labelcoords {70 600}
+    interface-peer {eth0 n5}
+    services {SSH DefaultRoute UserDefined}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('resolv.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh resolv.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resolv.sh
+	custom-command resolv.sh
+	config {
+	#!/bin/sh
+	rm /etc/resolv.conf
+	touch /etc/resolv.conf
+	
+	}
+    }
+}
+
+node n2 {
+    type router
+    model PC
+    network-config {
+	hostname host2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:02
+	!
+    }
+    canvas c1
+    iconcoords {230 560}
+    labelcoords {230 600}
+    interface-peer {eth0 n5}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('resolv.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resolv.sh
+	custom-command resolv.sh
+	config {
+	#!/bin/sh
+	rm /etc/resolv.conf
+	touch /etc/resolv.conf
+	
+	}
+    }
+    services {SSH DefaultRoute UserDefined}
+}
+
+node n3 {
+    type router
+    model PC
+    network-config {
+	hostname host3
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:03
+	!
+    }
+    canvas c1
+    iconcoords {70 390}
+    labelcoords {70 430}
+    interface-peer {eth0 n5}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('resolv.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resolv.sh
+	custom-command resolv.sh
+	config {
+	#!/bin/sh
+	rm /etc/resolv.conf
+	touch /etc/resolv.conf
+	
+	}
+    }
+    services {SSH DefaultRoute UserDefined}
+}
+
+node n4 {
+    type router
+    model PC
+    network-config {
+	hostname host4
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:04
+	!
+    }
+    canvas c1
+    iconcoords {140 170}
+    labelcoords {140 140}
+    interface-peer {eth0 n6}
+    services {SSH UserDefined}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('resolv.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh resolv.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resolv.sh
+	custom-command resolv.sh
+	config {
+	#!/bin/sh
+	rm /etc/resolv.conf
+	touch /etc/resolv.conf
+	
+	}
+    }
+}
+
+node n5 {
+    type lanswitch
+    network-config {
+	hostname switch1
+	!
+    }
+    canvas c1
+    iconcoords {150 460}
+    labelcoords {150 505}
+    interface-peer {e0 n1}
+    interface-peer {e1 n2}
+    interface-peer {e2 n3}
+    interface-peer {e3 n6}
+}
+
+node n6 {
+    type router
+    model router
+    network-config {
+	hostname router1
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F3
+	 ipv6 address 2001:DB8:BEE:C1::FE/127
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F2
+	 ipv6 address 2001:DB8:BEE:22::1/64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F1
+	 ipv6 address 2001:DB8:BEE:11::1/64
+	!
+    }
+    canvas c1
+    iconcoords {290 300}
+    labelcoords {315 280}
+    interface-peer {eth0 n5}
+    interface-peer {eth1 n4}
+    interface-peer {eth2 n11}
+    services {UserDefined SSH IPForward DefaultRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default proto static via 2001:DB8:BEE:C1::FF
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:11::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	interface eth1 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:22::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	}
+    }
+}
+
+node n7 {
+    type hub
+    network-config {
+	hostname switch2
+	!
+    }
+    canvas c1
+    iconcoords {500 210}
+    labelcoords {550 215}
+    interface-peer {e0 n8}
+    interface-peer {e1 n9}
+    interface-peer {e2 n10}
+    interface-peer {e3 n11}
+}
+
+node n8 {
+    type router
+    model host
+    network-config {
+	hostname webserver
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:05
+	!
+    }
+    canvas c1
+    iconcoords {420 110}
+    labelcoords {420 85}
+    interface-peer {eth0 n7}
+}
+
+node n9 {
+    type router
+    model host
+    network-config {
+	hostname dns64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:06
+	!
+    }
+    canvas c1
+    iconcoords {580 110}
+    labelcoords {580 85}
+    interface-peer {eth0 n7}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('setupDNS.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setupDNS.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:setupDNS.sh
+	custom-command setupDNS.sh
+	config {
+	#!/bin/sh
+	
+	# setup DNS
+	cat <<EOF > /etc/bind/named.conf.local
+	zone "ilabx" IN {
+	    type master;
+	    file "/etc/bind/ilabx.zone";
+	    allow-query { any; };
+	    allow-transfer { any; };
+	};
+	EOF
+	
+	cat <<EOF > /etc/bind/ilabx.zone
+	\$TTL 3D
+	@       IN      SOA     ns1.ilabx. hostmaster.ilabx. (
+	                       201711061       ; serial#
+	                       3600            ; refresh, seconds
+	                       3600            ; retry, seconds
+	                       3600            ; expire, seconds
+	                       3600 )          ; minimum, seconds
+	
+	                NS      ns1
+	
+	ns1               AAAA 2001:db8:bee:33:0:ff:fe00:6
+	ebee             A       203.0.113.1
+	EOF
+	}
+    }
+    services {DefaultRoute SSH DHCPClient UserDefined}
+}
+
+node n10 {
+    type router
+    model host
+    network-config {
+	hostname nat64
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:07
+	!
+    }
+    canvas c1
+    iconcoords {380 240}
+    labelcoords {380 280}
+    interface-peer {eth0 n7}
+    services {DefaultRoute SSH UserDefined}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('configureNAT64.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configureNAT64.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:configureNAT64.sh
+	custom-command configureNAT64.sh
+	config {
+	#!/bin/sh
+	cat <<EOF > /etc/default/tayga
+	
+	# Change this to "yes" to enable tayga
+	RUN="no"
+	
+	# Configure interface and set the routes up
+	CONFIGURE_IFACE="yes"
+	
+	# Configure NAT44 for the private IPv4 range
+	CONFIGURE_NAT44="yes"
+	
+	# Additional options that are passed to the Daemon.
+	DAEMON_OPTS=""
+	
+	# IPv4 address to assign to the NAT64 tunnel device
+	IPV4_TUN_ADDR=""
+	
+	# IPv6 address to assign to the NAT64 tunnel device
+	IPV6_TUN_ADDR=""
+	EOF
+	
+	cat <<EOF > /etc/tayga.conf
+	tun-device nat64
+	ipv4-addr 10.0.64.1
+	# configure the prefix used in our setup here:
+	prefix 64:ff9b::/96
+	dynamic-pool 10.0.64.0/24
+	
+	#
+	# Persistent data storage directory.  The dynamic.map file, which saves the
+	# dynamic maps that are created from dynamic-pool, is stored in this 
+	# directory.  Omit if you do not need these maps to be persistent between
+	# instances of TAYGA.
+	#
+	# Optional.
+	#
+	data-dir /var/spool/tayga
+	EOF
+	service tayga start
+	
+	sysctl -w net.ipv6.conf.eth0.accept_ra=2
+	sysctl -w net.ipv6.conf.all.forwarding=1
+	sysctl -w net.ipv4.ip_forward=1
+	}
+    }
+}
+
+node n11 {
+    type router
+    model router
+    network-config {
+	hostname router2
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F6
+	 ipv6 address 2001:DB8:AA::20/64
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F5
+	 ipv6 address 2001:DB8:BEE:C1::FF/127
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F4
+	 ipv6 address 2001:DB8:BEE:33::1/64
+	!
+    }
+    canvas c1
+    iconcoords {500 300}
+    labelcoords {535 280}
+    interface-peer {eth0 n7}
+    interface-peer {eth1 n6}
+    interface-peer {eth2 n12}
+    custom-config {
+	custom-config-id service:StaticRoute
+	custom-command StaticRoute
+	config {
+	files=('staticroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute:staticroute.sh
+	custom-command staticroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add 2001:DB8:BEE:11::/64 proto static via 2001:DB8:BEE:C1::FE
+	/sbin/ip -6 route add 2001:DB8:BEE:22::/64 proto static via 2001:DB8:BEE:C1::FE
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute
+	custom-command DefaultRoute
+	config {
+	files=('defaultroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:DefaultRoute:defaultroute.sh
+	custom-command defaultroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add default via 2001:DB8:AA::1
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:33::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	
+	}
+    }
+    services {UserDefined SSH IPForward DefaultRoute StaticRoute radvd} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+node n12 {
+    type router
+    model router
+    network-config {
+	hostname isp
+	!
+	interface eth2
+	 ipv6 address 2001:DB8:BB::1/64
+	 mac address 02:00:00:00:00:F8
+	!
+	interface eth0
+	 ipv6 address 2001:DB8:AA::1/64
+	 mac address 02:00:00:00:00:F7
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:41
+	!
+    }
+    canvas c1
+    iconcoords {670 420}
+    labelcoords {710 425}
+    interface-peer {eth0 n11}
+    interface-peer {eth1 n13}
+    interface-peer {eth2 n14}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('configureIP.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configureIP.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:configureIP.sh
+	custom-command configureIP.sh
+	config {
+	#!/bin/sh
+	/sbin/ip a add 203.0.113.254/24 dev eth1
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute
+	custom-command StaticRoute
+	config {
+	files=('staticroute.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:StaticRoute:staticroute.sh
+	custom-command staticroute.sh
+	config {
+	#!/bin/sh
+	/sbin/ip -6 route add 2001:DB8:BEE::/48 proto static via 2001:DB8:AA::20
+	
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth2 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BB::/64 {
+	        AdvOnLink on;
+	        AdvAutonomous on;
+	    };
+	};
+	}
+    }
+    services {SSH IPForward StaticRoute radvd UserDefined}
+}
+
+node n13 {
+    type router
+    model host
+    network-config {
+	hostname ebee
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:42
+	!
+    }
+    canvas c1
+    iconcoords {670 510}
+    labelcoords {670 550}
+    interface-peer {eth0 n12}
+    custom-config {
+	custom-config-id service:HTTP
+	custom-command HTTP
+	config {
+	dirs=('/etc/apache2', '/var/run/apache2', '/var/log/apache2', '/var/lock/apache2', '/var/www', '/run/lock', )
+	files=('/etc/apache2/apache2.conf', '/etc/apache2/envvars', '/var/www/index.html', )
+	}
+    }
+    custom-config {
+	custom-config-id service:HTTP:/var/www/index.html
+	custom-command /var/www/index.html
+	config {
+	<html>
+	<body>
+	<h1>ebee.ilabx web server</h1>
+	<p>Congratulations, you accessed this IPv4 only webserver!</p>
+	</body>
+	</html>
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('configureIP.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh configureIP.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:configureIP.sh
+	custom-command configureIP.sh
+	config {
+	#!/bin/sh
+	/sbin/ip a add 203.0.113.1/24 dev eth0
+	/sbin/ip r add default via 203.0.113.254
+	
+	}
+    }
+    services {DefaultRoute SSH HTTP UserDefined}
+}
+
+node n14 {
+    type router
+    model PC
+    network-config {
+	hostname hackerwasp
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:08
+	!
+    }
+    canvas c1
+    iconcoords {670 310}
+    labelcoords {670 285}
+    interface-peer {eth0 n12}
+}
+
+link l1 {
+    nodes {n1 n5}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n2 n5}
+    bandwidth 0
+}
+
+link l3 {
+    nodes {n3 n5}
+    bandwidth 0
+}
+
+link l4 {
+    nodes {n5 n6}
+    bandwidth 0
+}
+
+link l5 {
+    nodes {n4 n6}
+    bandwidth 0
+}
+
+link l6 {
+    nodes {n6 n11}
+    bandwidth 0
+}
+
+link l7 {
+    nodes {n8 n7}
+    bandwidth 0
+}
+
+link l8 {
+    nodes {n9 n7}
+    bandwidth 0
+}
+
+link l9 {
+    nodes {n10 n7}
+    bandwidth 0
+}
+
+link l10 {
+    nodes {n11 n7}
+    bandwidth 0
+}
+
+link l11 {
+    nodes {n11 n12}
+    bandwidth 0
+}
+
+link l12 {
+    nodes {n12 n13}
+    bandwidth 0
+}
+
+link l13 {
+    nodes {n12 n14}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {10 40 290 290}
+    type rectangle
+    label {Local Network 2}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a2 {
+    iconcoords {10 310 290 620}
+    type rectangle
+    label {Local Network 1}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a3 {
+    iconcoords {350 40 620 290}
+    type rectangle
+    label {Server Zone}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #f8cecc
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {0 0 630 630}
+    type rectangle
+    label {Internal Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #7ea6e0
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names yes
+    ip_addresses no
+    ipv6_addresses no
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid no
+    traffic_start 0
+}
+
+option session {
+}
+

@@ -1,0 +1,103 @@
+node n8 {
+    type router
+    model PC
+    network-config {
+	hostname hiveB
+	!
+	interface eth0
+	 mac address 00:00:00:00:00:BB
+	!
+    }
+    canvas c1
+    iconcoords {280 160}
+    labelcoords {280 200}
+    custom-image /usr/share/core/icons/normal/pc.gif
+    interface-peer {eth0 n6}
+    services {UserDefined SSH } 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+node n6 {
+    type router
+    model PC
+    network-config {
+	hostname hiveA
+	!
+	interface eth0
+	 mac address 00:00:00:00:00:AA
+	!
+    }
+    canvas c1
+    iconcoords {70 160}
+    labelcoords {70 200}
+    custom-image /usr/share/core/icons/normal/pc.gif
+    interface-peer {eth0 n8}
+    services {UserDefined SSH } 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+link l7 {
+    nodes {n6 n8}
+    bandwidth 0
+}
+
+annotation a3 {
+    iconcoords {10 40 350 300}
+    type rectangle
+    label {Hive Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {0 0 630 630}
+    type rectangle
+    label {Internal Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #7ea6e0
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names yes
+    ip_addresses no
+    ipv6_addresses no
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid no
+    traffic_start 0
+}
+
+option session {
+}
+
