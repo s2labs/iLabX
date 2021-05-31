@@ -15,6 +15,14 @@
             "end": "2020-12-31T23:59:59.999Z",
             "forumUrl": "https://courses.edx.org/courses/course-v1:TUMx+iLabx+2T2020/discussion/forum/",
             "faqUrl": "https://courses.edx.org/courses/course-v1:TUMx+iLabx+2T2020/8540f51ffac74523a0f1741f5f44f640/"
+        },
+        {
+            "name": "2021 iLabX edX",
+            "branch": "2021-iLabX-edX",
+            "start": "2021-05-25T00:00:00.000Z",
+            "end": "2022-05-25T23:59:59.999Z",
+            "forumUrl": "https://courses.edx.org/courses/course-v1:TUMx+iLabx+2T2021/discussion/forum/",
+            "faqUrl": "https://courses.edx.org/courses/course-v1:TUMx+iLabx+2T2021/8540f51ffac74523a0f1741f5f44f640/"
         }
 
     ]
