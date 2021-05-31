@@ -1,0 +1,356 @@
+node n1 {
+    type router
+    model PC
+    network-config {
+	hostname host1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:01
+	!
+    }
+    canvas c1
+    iconcoords {70 560}
+    labelcoords {70 600}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+node n2 {
+    type router
+    model PC
+    network-config {
+	hostname host2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:02
+	!
+    }
+    canvas c1
+    iconcoords {230 560}
+    labelcoords {230 600}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+node n3 {
+    type router
+    model PC
+    network-config {
+	hostname host3
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:03
+	!
+    }
+    canvas c1
+    iconcoords {70 390}
+    labelcoords {70 430}
+    interface-peer {eth0 n5}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+node n4 {
+    type router
+    model PC
+    network-config {
+	hostname host4
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:04
+	!
+    }
+    canvas c1
+    iconcoords {140 170}
+    labelcoords {140 140}
+    interface-peer {eth0 n6}
+    services {UserDefined SSH} 
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', )
+	}
+    }
+}
+
+node n5 {
+    type lanswitch
+    network-config {
+	hostname switch1
+	!
+    }
+    canvas c1
+    iconcoords {150 460}
+    labelcoords {150 505}
+    interface-peer {e0 n1}
+    interface-peer {e1 n2}
+    interface-peer {e2 n3}
+    interface-peer {e3 n6}
+}
+
+node n6 {
+    type router
+    model router
+    network-config {
+	hostname router1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F1
+	 ipv6 address 2001:DB8:BEE:11::1/64
+	!
+	interface eth2
+	 mac address 02:00:00:00:00:F3
+	 ipv6 address 2001:DB8:BEE:C1::FE/127
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F2
+	 ipv6 address 2001:DB8:BEE:22::1/64
+	!
+    }
+    canvas c1
+    iconcoords {290 300}
+    labelcoords {315 280}
+    interface-peer {eth0 n5}
+    interface-peer {eth1 n4}
+    interface-peer {eth2 n11}
+    services {SSH radvd UserDefined}
+    custom-config {
+	custom-config-id service:UserDefined:setMtu.sh
+	custom-command setMtu.sh
+	config {
+	#!/bin/sh
+	ip link set dev eth2 mtu 1300
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('setMtu.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setMtu.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth1 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:22::/64;
+	};
+	}
+    }
+}
+
+node n8 {
+    type router
+    model host
+    network-config {
+	hostname server1
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:05
+	!
+    }
+    canvas c1
+    iconcoords {420 150}
+    labelcoords {420 125}
+    interface-peer {eth0 n11}
+}
+
+node n11 {
+    type router
+    model router
+    network-config {
+	hostname router2
+	!
+	interface eth0
+	 mac address 02:00:00:00:00:F4
+	 ipv6 address 2001:DB8:BEE:33::1/64
+	!
+	interface eth1
+	 mac address 02:00:00:00:00:F5
+	 ipv6 address 2001:DB8:BEE:C1::FF/127
+	!
+    }
+    canvas c1
+    iconcoords {500 300}
+    labelcoords {535 280}
+    interface-peer {eth1 n6}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('setMtu.sh', )
+	cmdup=('mount -t tmpfs tmpfs /dev/shm', 'mount -a', 'sh setMtu.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:setMtu.sh
+	custom-command setMtu.sh
+	config {
+	#!/bin/sh
+	ip link set dev eth1 mtu 1300
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd
+	custom-command radvd
+	config {
+	files=('/etc/radvd/radvd.conf', )
+	}
+    }
+    custom-config {
+	custom-config-id service:radvd:/etc/radvd/radvd.conf
+	custom-command /etc/radvd/radvd.conf
+	config {
+	interface eth0 {
+	    AdvSendAdvert on;
+	    prefix 2001:DB8:BEE:33::/64;
+	};
+	
+	}
+    }
+    services {SSH IPForward radvd UserDefined}
+    interface-peer {eth0 n8}
+}
+
+link l1 {
+    nodes {n1 n5}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n2 n5}
+    bandwidth 0
+}
+
+link l3 {
+    nodes {n3 n5}
+    bandwidth 0
+}
+
+link l4 {
+    nodes {n5 n6}
+    bandwidth 0
+}
+
+link l5 {
+    nodes {n4 n6}
+    bandwidth 0
+}
+
+link l6 {
+    nodes {n6 n11}
+    bandwidth 0
+}
+
+link l7 {
+    nodes {n11 n8}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {10 40 290 290}
+    type rectangle
+    label {Local Network 2}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a2 {
+    iconcoords {10 310 290 620}
+    type rectangle
+    label {Local Network 1}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #cdeb8b
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a3 {
+    iconcoords {350 40 620 290}
+    type rectangle
+    label {Server Zone}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #f8cecc
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {0 0 630 630}
+    type rectangle
+    label {Internal Network}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #7ea6e0
+    width 1
+    border black
+    rad 0
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names yes
+    ip_addresses no
+    ipv6_addresses no
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid no
+    traffic_start 0
+}
+
+option session {
+}
+
